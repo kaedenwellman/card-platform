@@ -55,7 +55,7 @@ Editing after launch updates the live site immediately. Card PDFs regenerate onl
 | Framework | Next.js (App Router) + TypeScript | |
 | Styling | Tailwind CSS | App pages use Tailwind. Public profile pages use plain CSS ported 1:1 from the reference (`src/components/profile/profile.css`) so they match it exactly |
 | Hosting | Vercel **Pro** | The Hobby plan is non-commercial only |
-| Database | Neon Postgres + Drizzle ORM | |
+| Database | Railway Postgres + Drizzle ORM | Switched from Neon on 2026-09-27 (Kaeden already has Railway). Driver: `postgres` (postgres.js) with a small per-instance pool. Vercel connects over Railway's **public** URL (`DATABASE_PUBLIC_URL`), not the private `.railway.internal` one |
 | Auth | Clerk | Decided 2026-09-27. `ClerkProvider` wraps only the signed-in app (`src/app/(app)`), not public pages |
 | File storage | Vercel Blob | Resumes **private**; photos and PDFs public |
 | AI | Anthropic API | Use tool use with a JSON schema for structured output. Check docs.claude.com for the current model names; a Sonnet-class model is right for parsing |
@@ -160,7 +160,7 @@ Store prices in Stripe, not code. Assume **one-time setup fee + annual renewal**
 Work in order. Each milestone ends with a working deploy and its acceptance check passing. Update §14 as you go.
 
 **M1: Foundation**
-- Next.js app, Tailwind, Drizzle + Neon, auth, Vercel project with preview deploys.
+- Next.js app, Tailwind, Drizzle + Railway Postgres, auth, Vercel project with preview deploys.
 - Public `/[slug]` page that renders a seed profile (Kaeden's content from `/reference`) and **matches the reference site** on phone and desktop.
 - ✅ The seed profile at `/kaeden` looks and behaves like meetkaeden.site at 390px and 1400px.
 
@@ -214,7 +214,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Verified: `/kaeden` vs. the live site in Chromium at 390 and 1400 px is pixel-identical within antialiasing; arrows, arrow keys, swipe, section tabs, the Future projects popup, and `tel:` links behave the same; no console errors; no horizontal scroll.
   - Without `DATABASE_URL` the app serves the built-in seed (`src/seed/kaeden.ts`) at `/kaeden`, so UI work doesn't need a database.
   - Font: Archivo is self-hosted (`src/fonts/`, from `@fontsource-variable/archivo`) through `next/font/local` instead of the Google Fonts stylesheet. Same font and axes, no request to Google.
-  - Remaining for Kaeden: create the Neon database, the Clerk app, and the Vercel Pro project; set env vars; run `npm run db:migrate && npm run db:seed`.
+  - Remaining for Kaeden: add a Postgres database on Railway, the Clerk app, and the Vercel Pro project; set env vars; run `npm run db:migrate && npm run db:seed`.
 - [ ] M2 Resume → draft
 - [ ] M3 Editor
 - [ ] M4 Cards

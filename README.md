@@ -12,7 +12,9 @@ npm run dev                   # http://localhost:3000/kaeden
 
 With no `DATABASE_URL`, `/kaeden` renders from the built-in seed so you can work on the UI. Signed-in pages (`/start`, `/edit`, `/dashboard`) need Clerk keys.
 
-### Database (Neon)
+### Database (Railway Postgres)
+
+In Railway, add a PostgreSQL service and copy its `DATABASE_PUBLIC_URL` into `DATABASE_URL` (locally in `.env.local`, and in Vercel's environment variables). The private `postgres.railway.internal` URL only works inside Railway.
 
 ```bash
 npm run db:migrate   # apply drizzle/*.sql

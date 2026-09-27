@@ -1,9 +1,9 @@
 // Seeds Kaeden's profile at /kaeden. Safe to re-run: replaces the profile's slides and future items
 // but keeps its id and QR code.
 //   npm run db:seed
-import { neon } from "@neondatabase/serverless";
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { KAEDEN } from "../seed/kaeden";
 import { futureItemSchema, profileSchema, slideSchema } from "../lib/validation";
 import { futureItems, profiles, slides } from "./schema";
@@ -11,7 +11,8 @@ import { futureItems, profiles, slides } from "./schema";
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
-  const d = drizzle(neon(url));
+  const sql = postgres(url, { max: 1 });
+  const d = drizzle(sql);
 
   const fields = profileSchema.parse(KAEDEN);
   const slideRows = KAEDEN.slides.map((s) => slideSchema.parse(s));
@@ -27,15 +28,15 @@ async function main() {
           .returning()
       )[0].id;
 
-  // neon-http has no interactive transactions; batch keeps the delete + insert atomic.
-  await d.batch([
-    d.delete(slides).where(eq(slides.profileId, profileId)),
-    d.delete(futureItems).where(eq(futureItems.profileId, profileId)),
-    d.insert(slides).values(slideRows.map((s, position) => ({ ...s, profileId, position }))),
-    d.insert(futureItems).values(futureRows.map((f, position) => ({ ...f, profileId, position }))),
-  ]);
+  await d.transaction(async (tx) => {
+    await tx.delete(slides).where(eq(slides.profileId, profileId));
+    await tx.delete(futureItems).where(eq(futureItems.profileId, profileId));
+    await tx.insert(slides).values(slideRows.map((s, position) => ({ ...s, profileId, position })));
+    await tx.insert(futureItems).values(futureRows.map((f, position) => ({ ...f, profileId, position })));
+  });
 
   console.log(`Seeded /${KAEDEN.slug} (${slideRows.length} slides, ${futureRows.length} future items)`);
+  await sql.end();
 }
 
 main().catch((err) => {
