@@ -214,7 +214,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Verified: `/kaeden` vs. the live site in Chromium at 390 and 1400 px is pixel-identical within antialiasing; arrows, arrow keys, swipe, section tabs, the Future projects popup, and `tel:` links behave the same; no console errors; no horizontal scroll.
   - Without `DATABASE_URL` the app serves the built-in seed (`src/seed/kaeden.ts`) at `/kaeden`, so UI work doesn't need a database.
   - Font: Archivo is self-hosted (`src/fonts/`, from `@fontsource-variable/archivo`) through `next/font/local` instead of the Google Fonts stylesheet. Same font and axes, no request to Google.
-  - Remaining for Kaeden: add a Postgres database on Railway, the Clerk app, and the Vercel Pro project; set env vars; run `npm run db:migrate && npm run db:seed`.
+  - Remaining for Kaeden: add a Postgres database on Railway, the Clerk app, and the Vercel Pro project; set env vars. Migrations and the /kaeden seed run automatically in the `vercel-build` script on each deploy (the seed only inserts if /kaeden is missing, so it never overwrites edits).
 - [ ] M2 Resume → draft
 - [ ] M3 Editor
 - [ ] M4 Cards

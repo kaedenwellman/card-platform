@@ -16,9 +16,13 @@ With no `DATABASE_URL`, `/kaeden` renders from the built-in seed so you can work
 
 In Railway, add a PostgreSQL service and copy its `DATABASE_PUBLIC_URL` into `DATABASE_URL` (locally in `.env.local`, and in Vercel's environment variables). The private `postgres.railway.internal` URL only works inside Railway.
 
+On Vercel this is automatic: the `vercel-build` script applies pending migrations and adds the `/kaeden` seed profile (only if it's missing) before every build.
+
+To do it by hand (needs a machine that can reach the database):
+
 ```bash
-npm run db:migrate   # apply drizzle/*.sql
-npm run db:seed      # insert Kaeden's profile at /kaeden
+npm run db:migrate          # apply drizzle/*.sql, then seed /kaeden if missing
+npm run db:seed -- --reset  # overwrite /kaeden with src/seed/kaeden.ts
 ```
 
 After changing `src/db/schema.ts`, run `npm run db:generate` and commit the new migration.
