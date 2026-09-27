@@ -3,7 +3,7 @@ import Link from "next/link";
 // M6 replaces this with the real landing page (example site, price, how it works).
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-6 px-4 py-16 sm:px-8">
+    <section className="flex max-w-3xl flex-col gap-6 py-8 sm:py-16">
       <h1 className="text-4xl font-extrabold leading-none [font-stretch:125%] sm:text-6xl">
         Your resume, as a site and a business card.
       </h1>
@@ -21,6 +21,6 @@ export default function Home() {
           See an example
         </Link>
       </div>
-    </main>
+    </section>
   );
 }
