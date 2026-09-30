@@ -209,12 +209,14 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 
 ## 14. Status
 
-- [ ] M1 Foundation: code done, deploy pending
-  - Done: Next.js 16 + Tailwind 4, Drizzle schema for every table in §6 with the first migration (`drizzle/0000_init.sql`), Clerk sign-in with protected `/start`, `/edit`, `/dashboard` (placeholders), seed script, public `/[slug]` page with lapsed (contact-only) and draft/removed (404) states, reserved slugs, https-only link sanitizing.
-  - Verified: `/kaeden` vs. the live site in Chromium at 390 and 1400 px is pixel-identical within antialiasing; arrows, arrow keys, swipe, section tabs, the Future projects popup, and `tel:` links behave the same; no console errors; no horizontal scroll.
-  - Without `DATABASE_URL` the app serves the built-in seed (`src/seed/kaeden.ts`) at `/kaeden`, so UI work doesn't need a database.
-  - Font: Archivo is self-hosted (`src/fonts/`, from `@fontsource-variable/archivo`) through `next/font/local` instead of the Google Fonts stylesheet. Same font and axes, no request to Google.
-  - Remaining for Kaeden: add a Postgres database on Railway, the Clerk app, and the Vercel Pro project; set env vars. Migrations and the /kaeden seed run automatically in the `vercel-build` script on each deploy (the seed only inserts if /kaeden is missing, so it never overwrites edits).
+- [x] M1 Foundation (done 2026-09-30). Live at https://card-platform-mu.vercel.app (`/kaeden`, sign-up and sign-in verified).
+  - Next.js 16 + Tailwind 4, Drizzle schema for every table in §6 (`drizzle/0000_init.sql`), Clerk sign-in with protected `/start`, `/edit`, `/dashboard` (placeholders), public `/[slug]` page with lapsed (contact-only) and draft/removed (404) states, reserved slugs, https-only link sanitizing.
+  - `/kaeden` vs. the live site in Chromium at 390 and 1400 px: pixel-identical within antialiasing; arrows, arrow keys, swipe, section tabs, Future projects popup, and `tel:` links behave the same; no console errors; no horizontal scroll.
+  - Deploys: `vercel-build` applies migrations and inserts the /kaeden seed if missing. `/healthz` shows which env vars the running deployment can see (set/missing only).
+  - Without `DATABASE_URL` the app serves the built-in seed (`src/seed/kaeden.ts`) at `/kaeden`.
+  - Font: Archivo is self-hosted (`src/fonts/`, from `@fontsource-variable/archivo`) via `next/font/local` instead of the Google Fonts stylesheet.
+  - Clerk is on the development instance (`pk_test_`). Before launch: create a production instance on the real domain and swap in `pk_live_`/`sk_live_` keys. Consider enabling first/last name at sign-up.
+  - Vercel env var gotcha: `NEXT_PUBLIC_*` vars must be type Config, and switching a var between Sensitive and Config can blank its value. Check `/healthz` after changing vars, and redeploy without the build cache.
 - [ ] M2 Resume → draft
 - [ ] M3 Editor
 - [ ] M4 Cards
