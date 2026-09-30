@@ -15,7 +15,17 @@ const RESUME_TYPES = {
 // Safe file name for the blob path; the real name never matters.
 const ext = (f: File) => (f.name.toLowerCase().match(/\.(pdf|docx|jpe?g|png|webp)$/)?.[1] ?? "bin").replace("jpeg", "jpg");
 
-export function UploadForm({ clerkId, replacing }: { clerkId: string; replacing: boolean }) {
+export function UploadForm({
+  clerkId,
+  replacing,
+  theme,
+  submitLabel = "Build my draft",
+}: {
+  clerkId: string;
+  replacing: boolean;
+  theme?: { templateId: string; paletteId: string; cardTemplateId: string };
+  submitLabel?: string;
+}) {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +62,7 @@ export function UploadForm({ clerkId, replacing }: { clerkId: string; replacing:
       const res = await fetch("/api/resume/parse", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ resumePathname: resumeBlob.pathname, photoPathname: photoBlob?.pathname ?? null }),
+        body: JSON.stringify({ resumePathname: resumeBlob.pathname, photoPathname: photoBlob?.pathname ?? null, theme }),
       });
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; photoError?: string };
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Something went wrong. Try again.");
@@ -103,7 +113,7 @@ export function UploadForm({ clerkId, replacing }: { clerkId: string; replacing:
         disabled={busy}
         className="rounded-md bg-gold px-6 py-4 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60"
       >
-        {stage === "uploading" ? "Uploading…" : stage === "reading" ? "Reading your resume…" : "Build my draft"}
+        {stage === "uploading" ? "Uploading…" : stage === "reading" ? "Reading your resume…" : submitLabel}
       </button>
 
       <p aria-live="polite" className="min-h-6 text-sm">

@@ -1,12 +1,15 @@
 import type { CSSProperties } from "react";
+import { getPalette, paletteVars } from "@/lib/design";
 import type { PublicProfile } from "@/lib/profile-types";
 import { safeColor } from "@/lib/safe";
 import "./profile.css";
 
 // Shown when a profile's subscription has lapsed. The owner's reactivate prompt comes in M5.
 export function ContactOnlyView({ profile }: { profile: PublicProfile }) {
+  const palette = getPalette(profile.theme.paletteId);
+  const accent = profile.theme.accent ? safeColor(profile.theme.accent, palette.accent) : undefined;
   return (
-    <div className="kp" style={{ "--gold": safeColor(profile.theme.accent, "#CFB87C") } as CSSProperties}>
+    <div className="kp kp-carousel" style={paletteVars(palette, accent) as CSSProperties}>
       <div className="page">
         <div className="minimal">
           <h1 className="name">

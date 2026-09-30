@@ -1,4 +1,4 @@
-import { futureItemSchema, httpsUrl, profileSchema, slideSchema } from "../validation";
+import { factSchema, futureItemSchema, httpsUrl, profileSchema, slideSchema } from "../validation";
 import type { FutureItem, ProfileFields, Slide } from "../validation";
 import type { AiDraft } from "./parse-ai";
 
@@ -33,6 +33,17 @@ export function normalizeDraft(ai: AiDraft): Draft {
       linkedin: toHttps(p.links.linkedin),
       website: toHttps(p.links.website),
     },
+    // Facts that don't fit the limits are dropped rather than failing the whole draft.
+    facts: ai.facts
+      .map((f) =>
+        factSchema.safeParse({
+          label: f.label.trim(),
+          value: f.value.trim(),
+          detail: f.detail?.trim() ? clip(f.detail.trim(), 80) : undefined,
+        }),
+      )
+      .flatMap((r) => (r.success ? [r.data] : []))
+      .slice(0, 4),
   });
 
   const slides = ai.slides.map((s, i) => {

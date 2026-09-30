@@ -3,7 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { and, asc, count, eq, gte, like } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { db } from "@/db";
-import { futureItems, profiles, resumeParses, slides, users } from "@/db/schema";
+import { futureItems, profiles, resumeParses, slides, users, type ProfileTheme } from "@/db/schema";
 import type { Draft } from "./resume/normalize";
 import { isValidSlug, newQrCode } from "./slugs";
 import { profileTag } from "./profiles";
@@ -85,6 +85,7 @@ type SaveInput = {
   draft: Draft | null; // null when parsing failed: keep the raw text for the editor
   resumeText: string;
   resumeBlobUrl: string | null;
+  theme?: ProfileTheme; // design picked in the create flow
 };
 
 // Creates the user's draft profile, or replaces its content if it's still a draft.
@@ -101,6 +102,8 @@ export async function saveDraft(input: SaveInput) {
     email: fields?.email || input.fallbackEmail,
     phone: fields?.phone ?? null,
     links: fields?.links ?? {},
+    facts: fields?.facts ?? [],
+    ...(input.theme ? { theme: input.theme } : {}),
     resumeText: input.resumeText,
     resumeBlobUrl: input.resumeBlobUrl,
     updatedAt: new Date(),

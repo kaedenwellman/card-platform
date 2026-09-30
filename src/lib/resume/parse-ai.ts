@@ -30,6 +30,7 @@ const DraftSchema = z.object({
       link: z.object({ label: z.string(), href: z.string() }).nullable(),
     }),
   ),
+  facts: z.array(z.object({ label: z.string(), value: z.string(), detail: z.string().nullable() })),
   future_items: z.array(z.object({ title: z.string(), body: z.string() })),
 });
 
@@ -54,6 +55,8 @@ Slides:
 - role: position, organization, and dates joined with " · ", using only what the resume states.
 - points: the entry's bullets, lightly shortened. At most 5, each under about 220 characters. Use body instead of points only for prose paragraphs.
 - link: a URL from the resume that belongs to that entry, with a short label; otherwise null.
+
+facts: up to 4 key facts for a stat grid at the top of the page, each a short label and value taken from the resume, most important first. Good labels: "Major", "School", "Academics", "Athletics", "Role", "Experience". The value is short (a few words, or a number like "4.0"); detail is an optional short line of context (e.g. value "4.0", detail "College GPA"). Only use facts the resume states; fewer than 4 is fine.
 
 future_items: only if the resume has a section about planned or upcoming projects; otherwise an empty list.`;
 

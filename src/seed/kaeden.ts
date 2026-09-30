@@ -19,7 +19,13 @@ export const KAEDEN: PublicProfile = {
     github: "https://github.com/kaedenwellman",
     linkedin: "https://www.linkedin.com/in/kaeden-wellman-a45237377",
   },
-  theme: { accent: "#CFB87C" },
+  theme: { templateId: "carousel", paletteId: "gold", cardTemplateId: "classic" },
+  facts: [
+    { label: "Major", value: "B.S. Electrical Engineering" },
+    { label: "Athletics", value: "UCCS Division II Track & Field", detail: "400m / 110m hurdles" },
+    { label: "Academics", value: "4.0 UW / 4.36 W", detail: "High school GPA, Magna Cum Laude" },
+    { label: "School", value: "University of Colorado Colorado Springs", detail: "Fall 2026 – Present" },
+  ],
   resumePdfPublicUrl: `${M}/resume.pdf`,
   noindex: false,
   slides: [

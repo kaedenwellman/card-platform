@@ -225,12 +225,20 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Limits: 5 parses per user per 24h (`resume_parses` table). Re-uploading replaces a draft; published profiles are never overwritten.
   - Blob store is private and connected via OIDC (`BLOB_STORE_ID`, no `BLOB_READ_WRITE_TOKEN`), so uploads use presigned URLs (`handleUploadPresigned` + `uploadPresigned`, browser picks a random path inside the user's folder). `/healthz` reports both Blob credentials.
   - Verified locally with a fake Claude server: extraction of `reference/resume.pdf` inside the built server, retry after malformed output, link normalization, save and re-save, draft not public (404).
-- [ ] M3 Editor
-- [ ] M4 Cards
+- [ ] M3 Editor: partly done
+  - Designs (2026-09-30, Kaeden's request): 4 website layouts (`carousel` = Kaeden's site, `profile` = modeled on Bryson States's site, `timeline`, `gallery`) × 6 palettes, and 5 card designs, all in `src/lib/design.ts`, stored on `profiles.theme` ({templateId, paletteId, cardTemplateId}). Layouts live in `src/components/profile/*Template.tsx`; `ProfileView` picks one. Every color is a palette CSS variable; the default gold palette keeps `/kaeden` pixel-identical to meetkaeden.site (re-verified).
+  - `profiles.facts` (up to 4 {label, value, detail}) feeds the Profile layout's stat grid; the AI drafts them from the resume.
+  - Flow: dashboard has three options: Create website & card (`/create`: layout + colors, card design, resume upload; once per account), Update your website (`/edit`: change layout/colors with a live preview of your own site, review content), Print my business card (`/card`: card design picker, QR link, printing guide). `/start` is now only for re-uploading a draft.
+  - `/examples/[template]?palette=` renders Kaeden's content in any design (used for previews). Landing page shows Kaeden's live site and Bryson's screenshot (`public/examples/`).
+  - Still to do: editing slide text, reordering, per-slide photos, slug picker.
+- [ ] M4 Cards: partly done
+  - Done: `/c/[code]` redirect (302, scan logging without IPs), 5 card designs rendered in HTML/CSS at card proportions (`src/components/card/`), QR via `qrcode` (EC level Q, 4-module quiet zone). QR URLs use `NEXT_PUBLIC_SITE_URL` (falls back to the Vercel production URL): set it to the permanent domain before anyone prints.
+  - Still to do: the three PDFs (@react-pdf), QR decode verification, download buttons on `/card`.
 - [ ] M5 Payments + launch flow
 - [ ] M6 Launch polish
 
 ### Open decisions for Kaeden
+- [ ] Bryson's site URL (to link his example on the landing page) and whether his content can be used beyond the screenshot
 - [ ] Brand name and domain
 - [x] Clerk vs. Auth0: **Clerk**
 - [ ] Setup price and annual price

@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { hasDatabase } from "@/db";
 import { DAILY_PARSE_LIMIT, ensureUser, getOwnedProfile, parsesInLastDay } from "@/lib/owner";
 import { UploadForm } from "./UploadForm";
@@ -10,11 +11,13 @@ export default async function StartPage() {
   const { userId } = await auth.protect();
   const user = hasDatabase() ? await ensureUser() : null;
   const profile = user ? await getOwnedProfile(user.id) : null;
+  // First-time creation goes through the design picker; /start is only for re-uploading a draft.
+  if (hasDatabase() && !profile) redirect("/create");
   const used = user ? await parsesInLastDay(user.id) : 0;
 
   return (
     <section className="max-w-xl">
-      <h1 className="text-3xl font-extrabold [font-stretch:112%]">Upload your resume</h1>
+      <h1 className="text-3xl font-extrabold [font-stretch:112%]">Upload a new resume</h1>
       <p className="mt-3 text-muted">
         We&apos;ll turn it into a draft of your site: one slide per job, project, and activity, in your
         resume&apos;s order and wording. You review everything before anything goes live.

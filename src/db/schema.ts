@@ -10,6 +10,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { CardTemplateId, PaletteId, TemplateId } from "../lib/design";
 
 // Shapes stored in jsonb columns. Validated with Zod at the edges (see src/lib/validation.ts).
 export type ProfileLinks = {
@@ -18,9 +19,13 @@ export type ProfileLinks = {
   website?: string;
 };
 export type ProfileTheme = {
-  accent?: string; // hex, defaults to #CFB87C
-  templateId?: string; // defaults to "carousel"
+  templateId?: TemplateId; // website layout, see src/lib/design.ts (default "carousel")
+  paletteId?: PaletteId; // color palette (default "gold")
+  cardTemplateId?: CardTemplateId; // business card design (default "classic")
+  accent?: string; // optional hex override of the palette's accent
 };
+// Key facts shown in the "profile" layout's stat grid, e.g. { label: "Major", value: "Data Analytics" }.
+export type ProfileFact = { label: string; value: string; detail?: string };
 export type SlideLink = { label: string; href: string };
 export type SlideMedia = {
   type: "image" | "video";
@@ -60,6 +65,7 @@ export const profiles = pgTable(
     showPhoneOnCard: boolean("show_phone_on_card").notNull().default(true),
     links: jsonb("links").$type<ProfileLinks>().notNull().default({}),
     theme: jsonb("theme").$type<ProfileTheme>().notNull().default({}),
+    facts: jsonb("facts").$type<ProfileFact[]>().notNull().default([]),
 
     resumeBlobUrl: text("resume_blob_url"), // private
     resumeText: text("resume_text"), // extracted text, shown beside the editor

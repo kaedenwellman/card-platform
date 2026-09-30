@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cardTemplateIds, paletteIds, templateIds } from "./design";
 
 // Only https:// links from users. Our own relative paths ("/seed/...", "/api/...") are allowed for
 // assets we host.
@@ -16,6 +17,12 @@ export const httpsUrl = z
   }, "Links must start with https://");
 
 export const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Use a 6-digit hex color");
+
+export const factSchema = z.object({
+  label: z.string().trim().min(1).max(24),
+  value: z.string().trim().min(1).max(60),
+  detail: z.string().trim().max(80).optional(),
+});
 
 export const slideLinkSchema = z.object({
   label: z.string().trim().min(1).max(80),
@@ -69,10 +76,13 @@ export const profileSchema = z.object({
     .default({}),
   theme: z
     .object({
+      templateId: z.enum(templateIds).optional(),
+      paletteId: z.enum(paletteIds).optional(),
+      cardTemplateId: z.enum(cardTemplateIds).optional(),
       accent: hexColor.optional(),
-      templateId: z.string().max(40).optional(),
     })
     .default({}),
+  facts: z.array(factSchema).max(4).default([]),
   resumePdfPublicUrl: httpsUrl.nullable().default(null),
   noindex: z.boolean().default(false),
 });

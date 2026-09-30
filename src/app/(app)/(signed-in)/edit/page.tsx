@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasDatabase } from "@/db";
+import { getPalette, getTemplateId } from "@/lib/design";
 import { ensureUser, getOwnedDraft } from "@/lib/owner";
+import { DesignEditor } from "./DesignEditor";
 
-export const metadata = { title: "Your draft" };
+export const metadata = { title: "Update your website" };
 
 // M2: review the AI draft. M3 turns this into the full editor with live preview.
 export default async function EditPage({ searchParams }: PageProps<"/edit">) {
@@ -47,6 +49,14 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
         </div>
       </header>
 
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <h2 className="text-xl font-extrabold [font-stretch:112%]">Design</h2>
+        <DesignEditor
+          initial={{ templateId: getTemplateId(profile.theme.templateId), paletteId: getPalette(profile.theme.paletteId).id }}
+        />
+      </section>
+
+      <h2 className="border-t border-line pt-8 text-xl font-extrabold [font-stretch:112%]">Content</h2>
       {slides.length === 0 ? (
         <div className="rounded-md border border-line p-4">
           <h2 className="font-bold">We couldn&apos;t draft your slides automatically.</h2>

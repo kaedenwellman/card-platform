@@ -11,12 +11,20 @@ export const metadata: Metadata = { title: "Preview", robots: { index: false, fo
 
 // The owner's draft, rendered exactly like the public page. Outside the (app) layout so it's
 // full-screen like the real thing.
-export default async function PreviewPage() {
+export default async function PreviewPage({ searchParams }: PageProps<"/preview">) {
+  const { template, palette, embed } = await searchParams;
   await auth.protect();
   const user = hasDatabase() ? await ensureUser() : null;
   const data = user ? await getOwnedDraft(user.id) : null;
   if (!data) redirect("/start");
   const profile = toPublicProfile(data.profile, data.slides, data.future);
+
+  // ?template=&palette= previews an unsaved design choice; ?embed=1 hides the bar (used in iframes).
+  const override = {
+    templateId: typeof template === "string" ? template : undefined,
+    paletteId: typeof palette === "string" ? palette : undefined,
+  };
+  if (embed === "1") return <ProfileView profile={profile} override={override} />;
 
   return (
     <>
@@ -26,7 +34,7 @@ export default async function PreviewPage() {
           Back to draft
         </Link>
       </div>
-      <ProfileView profile={profile} />
+      <ProfileView profile={profile} override={override} />
     </>
   );
 }

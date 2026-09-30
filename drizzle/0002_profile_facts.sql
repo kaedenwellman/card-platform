@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "facts" jsonb DEFAULT '[]'::jsonb NOT NULL;

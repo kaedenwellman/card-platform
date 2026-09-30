@@ -5,46 +5,81 @@ import { ensureUser, getOwnedProfile } from "@/lib/owner";
 
 export const metadata = { title: "Dashboard" };
 
-const button = "inline-block rounded-md bg-gold px-6 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink";
+type Action = { title: string; body: string; href: string; cta: string; enabled: boolean; note?: string; primary?: boolean };
 
-// M5 adds site link, PDFs, printing guide, scan count, and subscription status.
+// The three things a customer does: create (once), update the site, print the card.
 export default async function DashboardPage() {
   const cu = await currentUser();
   const user = hasDatabase() ? await ensureUser() : null;
   const profile = user ? await getOwnedProfile(user.id) : null;
+  const has = Boolean(profile);
+
+  const actions: Action[] = [
+    {
+      title: "Create your website and business card",
+      body: "Pick a layout, colors, and a card design, then upload your resume. We draft everything for you.",
+      href: "/create",
+      cta: has ? "Created" : "Get started",
+      enabled: !has,
+      note: has ? "Done. Each account gets one website and card." : undefined,
+      primary: !has,
+    },
+    {
+      title: "Update your website",
+      body: "Review your draft, change the layout or colors, and see it at phone size.",
+      href: "/edit",
+      cta: "Update website",
+      enabled: has,
+      note: has ? undefined : "Create your website first.",
+      primary: has,
+    },
+    {
+      title: "Print my business card",
+      body: "See your card, switch designs, and get the files and instructions for printing.",
+      href: "/card",
+      cta: "Print my card",
+      enabled: has,
+      note: has ? undefined : "Create your website first.",
+    },
+  ];
 
   return (
-    <section className="max-w-xl">
-      <h1 className="text-3xl font-extrabold [font-stretch:112%]">
-        Welcome{cu?.firstName ? `, ${cu.firstName}` : ""}
-      </h1>
-      {!profile ? (
-        <>
-          <p className="mt-3 text-muted">You don&apos;t have a site yet.</p>
-          <Link href="/start" className={`mt-6 ${button}`}>
-            Upload your resume
-          </Link>
-        </>
-      ) : profile.status === "draft" ? (
-        <>
-          <p className="mt-3 text-muted">Your draft is ready to review. It isn&apos;t public yet.</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/edit" className={button}>
-              Review your draft
-            </Link>
-            <Link href="/preview" className="rounded-md border border-line px-6 py-3 hover:border-gold">
-              Preview
-            </Link>
+    <section className="flex flex-col gap-8">
+      <header>
+        <h1 className="text-3xl font-extrabold [font-stretch:112%]">Welcome{cu?.firstName ? `, ${cu.firstName}` : ""}</h1>
+        {profile && (
+          <p className="mt-2 text-muted">
+            Your site: <span className="text-ink">/{profile.slug}</span>{" "}
+            {profile.status === "draft" ? "(draft, not public yet)" : "(live)"}
+          </p>
+        )}
+      </header>
+      <div className="grid gap-4 md:grid-cols-3">
+        {actions.map((a) => (
+          <div
+            key={a.title}
+            className={`flex flex-col gap-3 rounded-xl border p-5 ${a.enabled ? "border-line" : "border-line/60 opacity-60"}`}
+          >
+            <h2 className="text-lg font-bold leading-snug">{a.title}</h2>
+            <p className="flex-1 text-sm text-muted">{a.body}</p>
+            {a.enabled ? (
+              <Link
+                href={a.href}
+                className={`rounded-md px-5 py-3 text-center font-bold [font-stretch:110%] ${
+                  a.primary ? "bg-gold text-black hover:bg-ink" : "border border-line hover:border-gold"
+                }`}
+              >
+                {a.cta}
+              </Link>
+            ) : (
+              <span aria-disabled="true" className="rounded-md border border-line px-5 py-3 text-center text-muted">
+                {a.cta}
+              </span>
+            )}
+            {a.note && <p className="text-xs text-muted">{a.note}</p>}
           </div>
-        </>
-      ) : (
-        <>
-          <p className="mt-3 text-muted">Your site is live.</p>
-          <Link href={`/${profile.slug}`} className={`mt-6 ${button}`}>
-            View your site
-          </Link>
-        </>
-      )}
+        ))}
+      </div>
     </section>
   );
 }

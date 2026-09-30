@@ -41,6 +41,7 @@ export function toPublicProfile(p: ProfileRow, slideRows: SlideRow[], futureRows
     showPhoneOnCard: p.showPhoneOnCard,
     links: p.links,
     theme: p.theme,
+    facts: p.facts,
     resumePdfPublicUrl: p.resumePdfPublicUrl,
     noindex: p.noindex,
     slides: slideRows.map((s) => ({

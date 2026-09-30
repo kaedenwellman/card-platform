@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { del, get } from "@vercel/blob";
 import { z } from "zod";
 import { hasDatabase } from "@/db";
+import { cardTemplateIds, paletteIds, templateIds } from "@/lib/design";
 import { PhotoError, processPhoto } from "@/lib/images";
 import { MAX_RESUME_BYTES } from "@/lib/limits";
 import {
@@ -24,6 +25,10 @@ export const maxDuration = 300;
 const Body = z.object({
   resumePathname: z.string().min(1).max(300),
   photoPathname: z.string().min(1).max(300).nullable().default(null),
+  // Design chosen in the create flow; omitted on a re-upload, which keeps the current design.
+  theme: z
+    .object({ templateId: z.enum(templateIds), paletteId: z.enum(paletteIds), cardTemplateId: z.enum(cardTemplateIds) })
+    .optional(),
 });
 
 const fail = (status: number, error: string) => Response.json({ ok: false, error }, { status });
@@ -60,7 +65,7 @@ export async function POST(request: Request) {
 
   const parsed = Body.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return fail(400, "Invalid request.");
-  const { resumePathname, photoPathname } = parsed.data;
+  const { resumePathname, photoPathname, theme } = parsed.data;
   // Uploads are only ever issued under the user's own folders (see /api/upload).
   if (!resumePathname.startsWith(`resumes/${clerkId}/`)) return fail(403, "That file isn't yours.");
   if (photoPathname && !photoPathname.startsWith(`uploads/${clerkId}/`)) return fail(403, "That photo isn't yours.");
@@ -122,6 +127,7 @@ export async function POST(request: Request) {
       draft,
       resumeText: text,
       resumeBlobUrl: resumePathname,
+      theme,
     });
     await recordParse(user.id, Boolean(draft), error);
     return Response.json({ ok: true, drafted: Boolean(draft), slug: saved.slug, error, photoError });
