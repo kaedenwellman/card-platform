@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint && node scripts/check-proxy.mjs",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env.local src/db/prepare.ts",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx --env-file-if-exists=.env.local src/db/seed.ts",
-    "vercel-build": "tsx src/db/prepare.ts && next build"
+    "vercel-build": "node scripts/check-proxy.mjs && tsx src/db/prepare.ts && next build",
+    "check:proxy": "node scripts/check-proxy.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

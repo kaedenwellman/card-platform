@@ -9,9 +9,12 @@ export default clerkMiddleware();
 export const config = {
   matcher: [
     "/",
+    // Every page under src/app/(app)/(signed-in)/ must be listed (checked by scripts/check-proxy.mjs).
+    "/create/:path*",
     "/start/:path*",
     "/edit/:path*",
     "/dashboard/:path*",
+    "/card/:path*",
     "/preview",
     "/sign-in/:path*",
     "/sign-up/:path*",
