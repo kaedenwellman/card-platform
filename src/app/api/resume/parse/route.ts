@@ -28,8 +28,8 @@ const Body = z.object({
 
 const fail = (status: number, error: string) => Response.json({ ok: false, error }, { status });
 
-async function readBlob(pathname: string, access: "private" | "public") {
-  const res = await get(pathname, { access });
+async function readBlob(pathname: string) {
+  const res = await get(pathname, { access: "private" });
   if (!res || res.statusCode !== 200) return null;
   return new Uint8Array(await new Response(res.stream).arrayBuffer());
 }
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
   }
 
   // 1. Read the resume (private blob) and pull out its text.
-  const bytes = await readBlob(resumePathname, "private");
+  const bytes = await readBlob(resumePathname);
   if (!bytes) return fail(400, "We couldn't find that upload. Try again.");
   if (bytes.byteLength > MAX_RESUME_BYTES) return fail(400, "Resumes can be at most 5 MB.");
   const kind = detectResumeKind(bytes);
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
   let photoError: string | undefined;
   if (photoPathname && draft) {
     try {
-      const photo = await readBlob(photoPathname, "public");
+      const photo = await readBlob(photoPathname);
       if (!photo) throw new PhotoError("We couldn't find that photo upload.");
       const url = await processPhoto(photo, `photos/${clerkId}/headshot`);
       draft.slides[0] = { ...draft.slides[0], media: { type: "image", url, fit: "contain" } };

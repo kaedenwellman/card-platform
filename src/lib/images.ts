@@ -6,7 +6,8 @@ import { MAX_PHOTO_BYTES, MIN_PHOTO_WIDTH } from "./limits";
 export class PhotoError extends Error {}
 
 // Re-encode an uploaded photo to WebP about 1600px wide (strips EXIF, applies rotation) and store it
-// publicly. Rejects photos narrower than 600px, which look blurry on the carousel.
+// in the private Blob store under photos/. Returns the app URL that serves it (/media/...).
+// Rejects photos narrower than 600px, which look blurry on the carousel.
 export async function processPhoto(bytes: Uint8Array, pathPrefix: string) {
   if (bytes.byteLength > MAX_PHOTO_BYTES) throw new PhotoError("Photos can be at most 8 MB.");
   let img = sharp(bytes, { failOn: "error" }).rotate();
@@ -20,9 +21,9 @@ export async function processPhoto(bytes: Uint8Array, pathPrefix: string) {
   img = img.resize({ width: 1600, withoutEnlargement: true }).webp({ quality: 80 });
   const out = await img.toBuffer();
   const blob = await put(`${pathPrefix}.webp`, out, {
-    access: "public",
+    access: "private",
     contentType: "image/webp",
     addRandomSuffix: true,
   });
-  return blob.url;
+  return `/media/${blob.pathname}`;
 }

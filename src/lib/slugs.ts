@@ -5,7 +5,7 @@ export const RESERVED_SLUGS = new Set([
   "help", "support", "about", "pricing", "contact", "blog", "docs", "legal", "security",
   "settings", "account", "billing", "checkout", "static", "public", "assets", "seed",
   "_next", "favicon.ico", "robots.txt", "sitemap.xml", "www", "mail", "status", "report",
-  "healthz", "preview", "official", "staff", "team", "root", "system", "null", "undefined",
+  "healthz", "preview", "media", "official", "staff", "team", "root", "system", "null", "undefined",
 ]);
 
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/;

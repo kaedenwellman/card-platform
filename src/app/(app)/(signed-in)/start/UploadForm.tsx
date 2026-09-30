@@ -43,7 +43,7 @@ export function UploadForm({ clerkId, replacing }: { clerkId: string; replacing:
       });
       const photoBlob = hasPhoto
         ? await upload(`uploads/${clerkId}/photo.${ext(photo)}`, photo, {
-            access: "public",
+            access: "private",
             handleUploadUrl: "/api/upload",
           })
         : null;
