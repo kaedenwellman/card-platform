@@ -18,7 +18,9 @@ export const config = {
     "/preview",
     "/sign-in/:path*",
     "/sign-up/:path*",
-    "/(api|trpc)(.*)",
+    // All APIs except Stripe's webhook, which authenticates with its own signature.
+    "/api/((?!stripe/webhook).*)",
+    "/trpc/(.*)",
     "/__clerk/:path*",
   ],
 };

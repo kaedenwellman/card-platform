@@ -14,6 +14,10 @@ export function GET() {
     // Blob works with either: the store's OIDC connection (BLOB_STORE_ID) or a read-write token.
     blobStoreId: process.env.BLOB_STORE_ID ? "set" : "not set",
     blobToken: process.env.BLOB_READ_WRITE_TOKEN ? "set" : "not set",
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY ? `set (${process.env.STRIPE_SECRET_KEY.slice(0, 8)}…)` : "MISSING",
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ? "set" : "MISSING",
+    stripePriceSetup: process.env.STRIPE_PRICE_SETUP ? "set" : "not set (optional)",
+    stripePriceAnnual: process.env.STRIPE_PRICE_ANNUAL ? "set" : "MISSING",
     vercelEnv: process.env.VERCEL_ENV ?? "local",
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
   };

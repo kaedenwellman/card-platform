@@ -238,13 +238,19 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 - [ ] M4 Cards: partly done
   - Done: `/c/[code]` redirect (302, scan logging without IPs), 5 card designs rendered in HTML/CSS at card proportions (`src/components/card/`), QR via `qrcode` (EC level Q, 4-module quiet zone). QR URLs use `NEXT_PUBLIC_SITE_URL` (falls back to the Vercel production URL): set it to the permanent domain before anyone prints.
   - Still to do: the three PDFs (@react-pdf), QR decode verification, download buttons on `/card`.
-- [ ] M5 Payments + launch flow
+- [ ] M5 Payments + launch flow: payments done, emails not yet
+  - Stripe Checkout (`/api/stripe/checkout`, subscription mode): setup fee (`STRIPE_PRICE_SETUP`, first purchase only) + yearly renewal (`STRIPE_PRICE_ANNUAL`). Prices live in Stripe; the dashboard shows them via `priceSummary()`.
+  - Publishing happens only in the webhook (`/api/stripe/webhook`, excluded from the Clerk proxy, verified by `STRIPE_WEBHOOK_SECRET`). Every event re-fetches the subscription from Stripe and syncs it (`syncSubscription` in `src/lib/stripe.ts`): active/trialing/past_due → profile active (sets published_at), canceled/unpaid/incomplete_expired/paused → lapsed, unless another subscription for the profile is active. Removed profiles are never changed. Note: billing period end is on subscription items in current Stripe API versions.
+  - Webhook events to enable: checkout.session.completed, checkout.session.async_payment_succeeded, customer.subscription.created/updated/deleted, invoice.paid, invoice.payment_failed.
+  - Billing portal (`/api/stripe/portal`) from the dashboard; lapsed sites get a Renew button (no setup fee).
+  - Verified locally with a fake Stripe API (`STRIPE_API_HOST`) and real Postgres: bad signature rejected, publish, duplicate event, past_due grace, cancel → lapsed, renewal, late event for an old subscription.
+  - Still to do: Resend emails ("your site is live"), card PDFs in that email.
 - [ ] M6 Launch polish
 
 ### Open decisions for Kaeden
 - [ ] Brand name and domain
 - [x] Clerk vs. Auth0: **Clerk**
-- [ ] Setup price and annual price
+- [ ] Setup price and annual price (create them in Stripe; the app reads them from there)
 - [ ] Which business entity runs this (existing LLC or a new one)
 - [ ] Whether meetkaeden.site moves onto the platform as its first profile or stays separate
 
