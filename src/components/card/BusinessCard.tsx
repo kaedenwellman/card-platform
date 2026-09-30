@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getPalette, type CardTemplateId, type Palette } from "@/lib/design";
+import { SafeImg } from "@/components/profile/SafeImg";
 import "./card.css";
 
 export type CardFace = {
@@ -70,8 +71,7 @@ export function BusinessCard({
       {design === "photo" && (
         <div className="bc-avatar">
           {card.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={card.photoUrl} alt="" />
+            <SafeImg src={card.photoUrl} alt="" fallback={<span>{initialsOf(card.name)}</span>} />
           ) : (
             <span>{initialsOf(card.name)}</span>
           )}

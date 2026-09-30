@@ -1,3 +1,4 @@
+import { SafeImg } from "./SafeImg";
 import { SiteFooter } from "./SiteFooter";
 import { EntryText, contactInfo, firstPhoto, sectionsOf, type TemplateProps } from "./shared";
 
@@ -12,8 +13,7 @@ export function TimelineTemplate({ profile, rootStyle }: TemplateProps) {
       <div className="tl-wrap">
         <header className="tl-head">
           {photo && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="tl-photo" src={photo.url} alt={profile.name} style={{ objectPosition: photo.position }} />
+            <SafeImg className="tl-photo" src={photo.url} alt={profile.name} style={{ objectPosition: photo.position }} fallback={null} />
           )}
           <div>
             <h1 className="tl-name">{profile.name}</h1>

@@ -3,6 +3,7 @@ import type { PublicProfile } from "@/lib/profile-types";
 import { boldSegments, safeColor, safeHref, safePosition, telHref } from "@/lib/safe";
 import type { Slide } from "@/lib/validation";
 import { GitHubIcon, LinkedInIcon, WebsiteIcon } from "./icons";
+import { SafeImg } from "./SafeImg";
 
 export type TemplateProps = { profile: PublicProfile; rootStyle: CSSProperties };
 
@@ -11,10 +12,20 @@ export function Bold({ text }: { text: string }) {
   return boldSegments(text).map((s, i) => (s.bold ? <b key={i}>{s.text}</b> : <span key={i}>{s.text}</span>));
 }
 
+function Placeholder({ slide }: { slide: Slide }) {
+  return (
+    <div className="ph" style={{ "--tint": safeColor(slide.tint, "#2a2f45") } as CSSProperties}>
+      <i>{slide.section}</i>
+      <b>{slide.title}</b>
+    </div>
+  );
+}
+
 export function SlideArt({ slide, eager = false }: { slide: Slide; eager?: boolean }) {
   const m = slide.media;
   const src = safeHref(m?.url);
   const loading = eager ? "eager" : "lazy";
+  const fallback = <Placeholder slide={slide} />;
   if (m && src && m.type === "video") {
     return <video src={src} muted loop playsInline preload="metadata" style={{ objectPosition: safePosition(m.position) }} />;
   }
@@ -23,20 +34,13 @@ export function SlideArt({ slide, eager = false }: { slide: Slide; eager?: boole
       <>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="fill" src={src} alt="" aria-hidden="true" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="whole" src={src} alt={slide.title} loading={loading} />
+        <SafeImg className="whole" src={src} alt={slide.title} loading={loading} fallback={fallback} />
       </>
     ) : (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={slide.title} loading={loading} style={{ objectPosition: safePosition(m.position) }} />
+      <SafeImg src={src} alt={slide.title} loading={loading} style={{ objectPosition: safePosition(m.position) }} fallback={fallback} />
     );
   }
-  return (
-    <div className="ph" style={{ "--tint": safeColor(slide.tint, "#2a2f45") } as CSSProperties}>
-      <i>{slide.section}</i>
-      <b>{slide.title}</b>
-    </div>
-  );
+  return fallback;
 }
 
 // The first image on any slide, used as the headshot in layouts that show one.

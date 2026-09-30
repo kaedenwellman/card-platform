@@ -1,3 +1,4 @@
+import { SafeImg } from "./SafeImg";
 import { SiteFooter } from "./SiteFooter";
 import { EntryText, contactInfo, firstPhoto, sectionsOf, type TemplateProps } from "./shared";
 
@@ -17,8 +18,7 @@ export function ProfileTemplate({ profile, rootStyle }: TemplateProps) {
         <header className={`pf-hero${photo ? "" : " no-photo"}`}>
           {photo && (
             <div className="pf-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo.url} alt={profile.name} style={{ objectPosition: photo.position }} />
+              <SafeImg src={photo.url} alt={profile.name} style={{ objectPosition: photo.position }} fallback={null} />
             </div>
           )}
           <div className="pf-id">

@@ -4,21 +4,25 @@ import { BusinessCard } from "@/components/card/BusinessCard";
 import { ScaledFrame } from "@/components/design/ScaledFrame";
 import { cardLine, qrSvg, qrUrl, siteOrigin } from "@/lib/card";
 import { CARD_TEMPLATES, TEMPLATES, getPalette } from "@/lib/design";
-import { EXAMPLE } from "@/seed/example";
+import { EXAMPLES, headshotOf } from "@/seed/examples";
 
 const label = "font-mono text-[11px] uppercase tracking-[0.22em] text-muted";
 
 export default async function Home() {
-  const sample = {
-    name: EXAMPLE.name,
-    line: cardLine(EXAMPLE.headline),
-    phone: EXAMPLE.phone,
-    email: EXAMPLE.email,
-    photoUrl: "/seed/kaeden/about.jpg",
-    qrSvg: await qrSvg(qrUrl(EXAMPLE.qrCode)),
-    domain: new URL(siteOrigin()).host,
-  };
-  const cardPalettes = ["gold", "gold", "ocean", "charcoal", "gold"] as const;
+  // One sample person per card design, so the row shows different names and majors.
+  const people = [EXAMPLES.john, EXAMPLES.maya, EXAMPLES.marcus, EXAMPLES.sofia, EXAMPLES.maya];
+  const faces = await Promise.all(
+    people.map(async (p) => ({
+      name: p.name,
+      line: cardLine(p.headline),
+      phone: p.phone,
+      email: p.email,
+      photoUrl: headshotOf(p),
+      qrSvg: await qrSvg(qrUrl(p.qrCode)),
+      domain: new URL(siteOrigin()).host,
+    })),
+  );
+  const cardPalettes = ["gold", "crimson", "ocean", "charcoal", "gold"] as const;
 
   return (
     <div className="flex flex-col pb-16">
@@ -96,12 +100,12 @@ export default async function Home() {
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {CARD_TEMPLATES.map((t, i) => (
             <div key={t.id}>
-              <BusinessCard design={t.id} palette={getPalette(cardPalettes[i])} side="front" card={sample} />
+              <BusinessCard design={t.id} palette={getPalette(cardPalettes[i])} side="front" card={faces[i]} />
               <p className="mt-3 text-sm">{t.name}</p>
             </div>
           ))}
           <div>
-            <BusinessCard design="classic" palette={getPalette("gold")} side="back" card={sample} />
+            <BusinessCard design="classic" palette={getPalette("gold")} side="back" card={faces[0]} />
             <p className="mt-3 text-sm">Back</p>
           </div>
         </div>
