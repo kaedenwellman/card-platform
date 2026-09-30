@@ -62,8 +62,12 @@ future_items: only if the resume has a section about planned or upcoming project
 
 let client: Anthropic | undefined;
 
+// The system prompt is shared; only this note changes for answers from the "build my resume"
+// interview, which are often spoken and transcribed.
+const INTERVIEW_NOTE = `These are not a resume. They are the person's own answers to interview questions, often spoken and transcribed, so expect filler words, run-on sentences, and missing punctuation. Treat the answers as the resume: turn them into concise, professional resume wording (clean bullets, consistent tense, no filler), but every fact must come from what they said. Never add numbers, titles, dates, employers, or skills they didn't mention. Skip questions they left blank.`;
+
 // Returns the parsed draft, or null if Claude declined or the output didn't match the schema.
-export async function draftFromResumeText(resumeText: string): Promise<AiDraft | null> {
+export async function draftFromResumeText(resumeText: string, source: "resume" | "interview" = "resume"): Promise<AiDraft | null> {
   client ??= new Anthropic({ timeout: 120_000, maxRetries: 2 });
 
   const response = await client.beta.messages.parse({
@@ -77,7 +81,10 @@ export async function draftFromResumeText(resumeText: string): Promise<AiDraft |
     messages: [
       {
         role: "user",
-        content: `Here is the resume text, extracted from the uploaded file:\n\n<resume>\n${resumeText}\n</resume>`,
+        content:
+          source === "interview"
+            ? `${INTERVIEW_NOTE}\n\n<resume>\n${resumeText}\n</resume>`
+            : `Here is the resume text, extracted from the uploaded file:\n\n<resume>\n${resumeText}\n</resume>`,
       },
     ],
   });
