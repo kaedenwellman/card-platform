@@ -87,20 +87,20 @@ export function UploadForm({
           required
           accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           disabled={busy}
-          className="rounded-md border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+          className="rounded-sm border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
         />
       </label>
       <label className="flex flex-col gap-2">
         <span className="font-bold">
           Photo of you <span className="font-normal text-muted">(optional)</span>
         </span>
-        <span className="text-sm text-muted">JPG, PNG, or WebP, at least 600px wide. Goes on your first slide.</span>
+        <span className="text-sm text-muted">JPG, PNG, or WebP, at least 600px wide.</span>
         <input
           name="photo"
           type="file"
           accept="image/jpeg,image/png,image/webp"
           disabled={busy}
-          className="rounded-md border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+          className="rounded-sm border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
         />
       </label>
 
@@ -111,7 +111,7 @@ export function UploadForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded-md bg-gold px-6 py-4 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60"
+        className="rounded-sm bg-gold px-6 py-4 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60"
       >
         {stage === "uploading" ? "Uploading…" : stage === "reading" ? "Reading your resume…" : submitLabel}
       </button>

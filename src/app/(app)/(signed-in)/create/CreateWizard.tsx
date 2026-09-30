@@ -7,7 +7,7 @@ import { WebsiteDesignPicker, type WebsiteDesign } from "@/components/design/Web
 import { DEFAULT_THEME, type CardTemplateId } from "@/lib/design";
 import { UploadForm } from "../start/UploadForm";
 
-const STEPS = ["Website design", "Business card", "Your resume"] as const;
+const STEPS = ["Choose a website design", "Choose a business card", "Upload your resume"] as const;
 
 export function CreateWizard({
   clerkId,
@@ -32,37 +32,21 @@ export function CreateWizard({
   return (
     <section className="flex flex-col gap-8">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">Create your website and card</h1>
-        <ol className="mt-5 flex flex-wrap gap-2 text-sm">
-          {STEPS.map((label, i) => (
-            <li key={label}>
-              <button
-                type="button"
-                disabled={i > step}
-                onClick={() => setStep(i)}
-                className={`rounded-full border px-3 py-1.5 ${
-                  i === step ? "border-gold text-ink" : i < step ? "border-line text-ink hover:border-gold" : "border-line text-muted"
-                }`}
-              >
-                {i + 1}. {label}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
+          Step {step + 1} of {STEPS.length}
+        </p>
+        <h1 className="mt-2 text-3xl font-extrabold [font-stretch:112%]">{STEPS[step]}</h1>
       </header>
 
       {step === 0 && (
         <>
-          <p className="text-muted">Pick a layout and colors. You can change both later.</p>
+          <p className="-mt-4 text-sm text-muted">You can change this later.</p>
           <WebsiteDesignPicker value={site} onChange={setSite} />
         </>
       )}
       {step === 1 && (
         <>
-          <p className="text-muted">
-            Pick a card design. The back has a QR code that opens your site. You print these yourself at FedEx Office,
-            a UPS Store, or at home.
-          </p>
+          <p className="-mt-4 text-sm text-muted">The QR code on the back opens your site.</p>
           <CardDesignPicker value={card} onChange={setCard} paletteId={site.paletteId} card={sampleCard} />
         </>
       )}
@@ -73,9 +57,8 @@ export function CreateWizard({
           </p>
         ) : (
           <div className="max-w-xl">
-            <p className="text-muted">
-              We&apos;ll turn your resume into your site: one slide per job, project, and activity, in your resume&apos;s
-              order and wording. You review everything before anything goes live.
+            <p className="-mt-4 text-sm text-muted">
+              We build your site from what&apos;s on your resume. Nothing goes live until you check it.
             </p>
             <UploadForm
               clerkId={clerkId}
@@ -89,16 +72,16 @@ export function CreateWizard({
       {step < 2 && (
         <div className="flex gap-3">
           {step > 0 && (
-            <button type="button" onClick={() => setStep(step - 1)} className="rounded-md border border-line px-6 py-3 hover:border-gold">
+            <button type="button" onClick={() => setStep(step - 1)} className="rounded-sm border border-line px-6 py-3 hover:border-muted">
               Back
             </button>
           )}
           <button
             type="button"
             onClick={next}
-            className="rounded-md bg-gold px-8 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink"
+            className="rounded-sm bg-gold px-8 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink"
           >
-            Next: {STEPS[step + 1]}
+            Next →
           </button>
         </div>
       )}

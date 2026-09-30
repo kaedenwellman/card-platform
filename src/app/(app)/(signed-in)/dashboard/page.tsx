@@ -16,70 +16,63 @@ export default async function DashboardPage() {
 
   const actions: Action[] = [
     {
-      title: "Create your website and business card",
-      body: "Pick a layout, colors, and a card design, then upload your resume. We draft everything for you.",
+      title: "Create website and business card",
+      body: "Pick a layout, colors, and a card, then upload your resume.",
       href: "/create",
-      cta: has ? "Created" : "Get started",
+      cta: "Start",
       enabled: !has,
-      note: has ? "Done. Each account gets one website and card." : undefined,
+      note: has ? "Done. One per account." : undefined,
       primary: !has,
     },
     {
       title: "Update your website",
-      body: "Review your draft, change the layout or colors, and see it at phone size.",
+      body: "Change the layout or colors and check your content.",
       href: "/edit",
-      cta: "Update website",
+      cta: "Open",
       enabled: has,
-      note: has ? undefined : "Create your website first.",
       primary: has,
     },
     {
       title: "Print my business card",
-      body: "See your card, switch designs, and get the files and instructions for printing.",
+      body: "Choose a card design and get it ready to print.",
       href: "/card",
-      cta: "Print my card",
+      cta: "Open",
       enabled: has,
-      note: has ? undefined : "Create your website first.",
     },
   ];
 
   return (
     <section className="flex flex-col gap-8">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">Welcome{cu?.firstName ? `, ${cu.firstName}` : ""}</h1>
+        <h1 className="text-3xl font-extrabold [font-stretch:112%]">{cu?.firstName ? `Hi, ${cu.firstName}` : "Your account"}</h1>
         {profile && (
-          <p className="mt-2 text-muted">
-            Your site: <span className="text-ink">/{profile.slug}</span>{" "}
-            {profile.status === "draft" ? "(draft, not public yet)" : "(live)"}
+          <p className="mt-2 text-sm text-muted">
+            /{profile.slug} · {profile.status === "draft" ? "draft, not public yet" : "live"}
           </p>
         )}
       </header>
-      <div className="grid gap-4 md:grid-cols-3">
+      <ul className="border-t border-line">
         {actions.map((a) => (
-          <div
-            key={a.title}
-            className={`flex flex-col gap-3 rounded-xl border p-5 ${a.enabled ? "border-line" : "border-line/60 opacity-60"}`}
-          >
-            <h2 className="text-lg font-bold leading-snug">{a.title}</h2>
-            <p className="flex-1 text-sm text-muted">{a.body}</p>
+          <li key={a.title} className="flex flex-col gap-3 border-b border-line py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className={a.enabled ? "" : "opacity-50"}>
+              <h2 className="font-bold">{a.title}</h2>
+              <p className="mt-1 text-sm text-muted">{a.note ?? a.body}</p>
+            </div>
             {a.enabled ? (
               <Link
                 href={a.href}
-                className={`rounded-md px-5 py-3 text-center font-bold [font-stretch:110%] ${
-                  a.primary ? "bg-gold text-black hover:bg-ink" : "border border-line hover:border-gold"
+                className={`self-start rounded-sm px-5 py-2.5 text-center font-bold [font-stretch:110%] sm:self-auto ${
+                  a.primary ? "bg-gold text-black hover:bg-ink" : "border border-line hover:border-muted"
                 }`}
               >
                 {a.cta}
               </Link>
             ) : (
-              <span aria-disabled="true" className="rounded-md border border-line px-5 py-3 text-center text-muted">
-                {a.cta}
-              </span>
+              !has && <span className="text-sm text-muted">Create your website first</span>
             )}
-            {a.note && <p className="text-xs text-muted">{a.note}</p>}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }

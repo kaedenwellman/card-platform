@@ -6,10 +6,10 @@ export type PaletteId = "gold" | "charcoal" | "ocean" | "forest" | "crimson" | "
 export type CardTemplateId = "classic" | "bold" | "split" | "photo" | "paper";
 
 export const TEMPLATES: { id: TemplateId; name: string; description: string }[] = [
-  { id: "carousel", name: "Carousel", description: "One slide at a time, big photos, swipe through. (Kaeden's site.)" },
-  { id: "profile", name: "Profile", description: "Photo and key stats up top, then every section on one page. (Bryson's site.)" },
-  { id: "timeline", name: "Timeline", description: "Your story top to bottom along a line, like a visual resume." },
-  { id: "gallery", name: "Gallery", description: "A grid of project cards with photos. Great if you have a lot to show." },
+  { id: "carousel", name: "Carousel", description: "One entry at a time, swipe through." },
+  { id: "profile", name: "Profile", description: "Photo and stats up top, one long page." },
+  { id: "timeline", name: "Timeline", description: "Entries in order down a line." },
+  { id: "gallery", name: "Gallery", description: "A grid of cards with photos." },
 ];
 
 // Every template reads these CSS variables, so any palette works with any layout.
@@ -38,11 +38,11 @@ export const PALETTES: Palette[] = [
 ];
 
 export const CARD_TEMPLATES: { id: CardTemplateId; name: string; description: string }[] = [
-  { id: "classic", name: "Classic", description: "Name in spaced caps, one accent line, contact at the bottom." },
-  { id: "bold", name: "Bold", description: "Your name, big and wide, with an accent bar." },
-  { id: "split", name: "Split", description: "A solid accent panel with your initials beside your details." },
-  { id: "photo", name: "Photo", description: "Your headshot in a circle next to your name." },
-  { id: "paper", name: "Paper", description: "Light, clean, and minimal. Prints well on any stock." },
+  { id: "classic", name: "Classic", description: "Spaced caps, contact at the bottom." },
+  { id: "bold", name: "Bold", description: "Big name." },
+  { id: "split", name: "Split", description: "Initials on a color panel." },
+  { id: "photo", name: "Photo", description: "Round headshot." },
+  { id: "paper", name: "Paper", description: "Light card stock look." },
 ];
 
 export const DEFAULT_THEME = { templateId: "carousel", paletteId: "gold", cardTemplateId: "classic" } as const;

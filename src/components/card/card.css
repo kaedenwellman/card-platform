@@ -11,7 +11,7 @@
   background: var(--c-bg);
   color: var(--c-ink);
   font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
-  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 10px 30px rgba(0,0,0,.35);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 10px 30px rgba(0,0,0,.35); /* edge visible on dark pages */
   -webkit-font-smoothing: antialiased;
 }
 .bc .bc-main { position: absolute; inset: 0; padding: 8cqw; display: flex; flex-direction: column; justify-content: space-between; }
