@@ -233,7 +233,8 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Style note from Kaeden: keep the app UI plain and editorial, not "AI-generated" looking: no glowing rings, pill chips, boxed card grids, or marketing slogans; square corners, thin rules, short copy.
   - Add content (`/edit`): add an entry (section, title, where/when, text, link, photo) or remove one; server actions `addEntry`/`removeEntry` in `src/lib/actions.ts`, scoped to the owner's profile. Several lines of text become bullet points.
   - "Don't have a resume?" (create flow step 3): `InterviewForm` asks the basics plus 7 questions (`src/lib/resume/questions.ts`), one per screen, typed or spoken (`VoiceTextarea`: browser Web Speech API; hidden where unsupported, with a tip to use the keyboard's dictation). Answers are kept in localStorage until the build succeeds. `/api/resume/interview` turns them into a transcript and drafts the site with the same prompt plus an interview note (clean up spoken wording, never add facts); shares the 5-per-day limit.
-  - Still to do: editing existing entries' text, reordering, slug picker.
+  - Editing (`/edit`): every entry has Edit (the same `EntryForm` as Add content, pre-filled; `updateEntry`), Add/Change/Remove photo (`setEntryPhoto`), and Remove. Name, headline, email, phone, and links are editable (`BasicsEditor`, `updateBasics`).
+  - Still to do: editing the Profile layout's key facts, reordering entries, slug picker.
 - [ ] M4 Cards: partly done
   - Done: `/c/[code]` redirect (302, scan logging without IPs), 5 card designs rendered in HTML/CSS at card proportions (`src/components/card/`), QR via `qrcode` (EC level Q, 4-module quiet zone). QR URLs use `NEXT_PUBLIC_SITE_URL` (falls back to the Vercel production URL): set it to the permanent domain before anyone prints.
   - Still to do: the three PDFs (@react-pdf), QR decode verification, download buttons on `/card`.

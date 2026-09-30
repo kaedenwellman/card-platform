@@ -4,9 +4,10 @@ import { redirect } from "next/navigation";
 import { hasDatabase } from "@/db";
 import { getPalette, getTemplateId } from "@/lib/design";
 import { ensureUser, getOwnedDraft } from "@/lib/owner";
-import { AddContentForm } from "./AddContentForm";
+import { BasicsEditor } from "./BasicsEditor";
 import { DesignEditor } from "./DesignEditor";
-import { RemoveEntryButton } from "./RemoveEntryButton";
+import { EntryForm } from "./EntryForm";
+import { EntryItem } from "./EntryItem";
 
 export const metadata = { title: "Update your website" };
 
@@ -27,8 +28,7 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold leading-tight [font-stretch:112%]">{profile.name}</h1>
-          {profile.headline && <p className="mt-1 text-muted">{profile.headline}</p>}
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-1 text-sm text-muted">
             /{profile.slug} · {isDraft ? "draft, not public yet" : "live"}
           </p>
         </div>
@@ -48,6 +48,21 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
         The AI wrote this from what you gave it. Read every line before you share your site.
       </p>
       {typeof photo === "string" && <p className="-mt-4 text-sm text-red-300">Your photo wasn&apos;t added: {photo}</p>}
+
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <h2 className={label}>Name and contact</h2>
+        <BasicsEditor
+          initial={{
+            name: profile.name,
+            headline: profile.headline,
+            email: profile.email,
+            phone: profile.phone ?? "",
+            linkedin: profile.links.linkedin ?? "",
+            github: profile.links.github ?? "",
+            website: profile.links.website ?? "",
+          }}
+        />
+      </section>
 
       <section className="flex flex-col gap-4 border-t border-line pt-8">
         <h2 className={label}>Design</h2>
@@ -71,27 +86,24 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
                   {slides
                     .filter((s) => s.section === section)
                     .map((s) => (
-                      <li key={s.id} className="flex items-start justify-between gap-4 border-b border-line py-4">
-                        <div className="min-w-0">
-                          <p className="font-bold">{s.title}</p>
-                          {s.role && <p className="text-sm text-gold">{s.role}</p>}
-                          {s.body && <p className="mt-2 text-sm text-ink/80">{s.body}</p>}
-                          {s.points.length > 0 && (
-                            <ul className="mt-2 list-disc pl-5 text-sm text-ink/80 marker:text-gold">
-                              {s.points.map((p, i) => (
-                                <li key={i}>{p.replace(/\*\*/g, "")}</li>
-                              ))}
-                            </ul>
-                          )}
-                          {s.link && (
-                            <p className="mt-2 break-all text-sm text-gold">
-                              {s.link.label} → {s.link.href}
-                            </p>
-                          )}
-                          {s.media && <p className="mt-2 text-xs text-muted">Has a {s.media.type === "video" ? "video" : "photo"}</p>}
-                        </div>
-                        <RemoveEntryButton id={s.id} title={s.title} />
-                      </li>
+                      <EntryItem
+                        key={s.id}
+                        clerkId={clerkId}
+                        sections={sections}
+                        body={s.body}
+                        points={s.points}
+                        entry={{
+                          id: s.id,
+                          section: s.section,
+                          title: s.title,
+                          role: s.role,
+                          text: s.points.length ? s.points.join("\n") : (s.body ?? ""),
+                          linkUrl: s.link?.href ?? "",
+                          linkLabel: s.link?.label ?? "",
+                          photoUrl: s.media?.url ?? null,
+                          isVideo: s.media?.type === "video",
+                        }}
+                      />
                     ))}
                 </ul>
               </div>
@@ -105,7 +117,7 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
           <h2 className={label}>Add content</h2>
           <p className="mt-2 text-sm text-muted">A job, project, club, award, anything you want on your site. It shows up right away.</p>
         </div>
-        <AddContentForm clerkId={clerkId} sections={sections} />
+        <EntryForm clerkId={clerkId} sections={sections} />
       </section>
 
       {profile.resumeText && (
