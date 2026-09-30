@@ -10,6 +10,8 @@ export function GET() {
     clerkSignInUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL ?? "not set",
     clerkSignUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? "not set",
     databaseUrl: process.env.DATABASE_URL ? "set" : "MISSING",
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY ? "set" : "MISSING",
+    blobToken: process.env.BLOB_READ_WRITE_TOKEN ? "set" : "MISSING",
     vercelEnv: process.env.VERCEL_ENV ?? "local",
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
   };

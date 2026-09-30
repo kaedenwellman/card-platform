@@ -62,6 +62,7 @@ export const profiles = pgTable(
     theme: jsonb("theme").$type<ProfileTheme>().notNull().default({}),
 
     resumeBlobUrl: text("resume_blob_url"), // private
+    resumeText: text("resume_text"), // extracted text, shown beside the editor
     resumePdfPublicUrl: text("resume_pdf_public_url"), // shown only if the owner opts in
     noindex: boolean("noindex").notNull().default(false),
 
@@ -90,6 +91,21 @@ export const slides = pgTable(
     tint: text("tint").notNull().default("#2a2f45"),
   },
   (t) => [index("slides_profile_idx").on(t.profileId, t.position)],
+);
+
+// One row per resume upload attempt; used for the per-user daily parse limit.
+export const resumeParses = pgTable(
+  "resume_parses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    ok: boolean("ok").notNull().default(false),
+    error: text("error"),
+  },
+  (t) => [index("resume_parses_user_idx").on(t.userId, t.createdAt)],
 );
 
 export const futureItems = pgTable(

@@ -12,6 +12,7 @@ export const config = {
     "/start/:path*",
     "/edit/:path*",
     "/dashboard/:path*",
+    "/preview",
     "/sign-in/:path*",
     "/sign-up/:path*",
     "/(api|trpc)(.*)",

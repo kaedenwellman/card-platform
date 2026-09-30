@@ -20,6 +20,15 @@ async function loadProfile(slug: string): Promise<PublicProfile | null> {
     d.select().from(futureItems).where(eq(futureItems.profileId, p.id)).orderBy(asc(futureItems.position)),
   ]);
 
+  return toPublicProfile(p, slideRows, futureRows);
+}
+
+type ProfileRow = typeof profiles.$inferSelect;
+type SlideRow = typeof slides.$inferSelect;
+type FutureRow = typeof futureItems.$inferSelect;
+
+// Database rows -> what the public page renders. Also used for the owner's draft preview.
+export function toPublicProfile(p: ProfileRow, slideRows: SlideRow[], futureRows: FutureRow[]): PublicProfile {
   return {
     slug: p.slug,
     qrCode: p.qrCode,

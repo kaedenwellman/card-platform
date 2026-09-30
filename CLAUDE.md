@@ -217,7 +217,13 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Font: Archivo is self-hosted (`src/fonts/`, from `@fontsource-variable/archivo`) via `next/font/local` instead of the Google Fonts stylesheet.
   - Clerk is on the development instance (`pk_test_`). Before launch: create a production instance on the real domain and swap in `pk_live_`/`sk_live_` keys. Consider enabling first/last name at sign-up.
   - Vercel env var gotcha: `NEXT_PUBLIC_*` vars must be type Config, and switching a var between Sensitive and Config can blank its value. Check `/healthz` after changing vars, and redeploy without the build cache.
-- [ ] M2 Resume → draft
+- [ ] M2 Resume → draft: code done, live test pending
+  - Flow: `/start` uploads the resume (private) and optional photo straight from the browser to Vercel Blob via `/api/upload` (Vercel caps request bodies at ~4.5 MB), then `/api/resume/parse` extracts text, asks Claude for a draft, validates it, and saves a `draft` profile. `/edit` shows the draft for review with the "Review everything" banner; `/preview` renders it exactly like the public page (owner only).
+  - AI: `claude-sonnet-5-5` via `client.beta.messages.parse` with a Zod schema (structured outputs, the current replacement for "tool use with a JSON schema"), effort `medium`, server-side refusal fallback. Output goes through `src/lib/resume/normalize.ts` (app Zod schemas, https-only links, tints). Retried once; if both fail, the draft keeps the raw resume text for the editor.
+  - PDF text: `unpdf` instead of `pdf-parse` (pdf-parse's worker file breaks inside the Next.js bundle; unpdf is built for serverless and gives the same text). DOCX: `mammoth`.
+  - Photos: re-encoded with `sharp` to WebP, 1600px wide, min 600px; the headshot goes on the first slide (`fit: "contain"`).
+  - Limits: 5 parses per user per 24h (`resume_parses` table). Re-uploading replaces a draft; published profiles are never overwritten.
+  - Verified locally with a fake Claude server: extraction of `reference/resume.pdf` inside the built server, retry after malformed output, link normalization, save and re-save, draft not public (404).
 - [ ] M3 Editor
 - [ ] M4 Cards
 - [ ] M5 Payments + launch flow
