@@ -1,6 +1,6 @@
 "use client";
 
-import { upload } from "@vercel/blob/client";
+import { uploadPresigned } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { MAX_PHOTO_BYTES, MAX_RESUME_BYTES } from "@/lib/limits";
@@ -36,13 +36,13 @@ export function UploadForm({ clerkId, replacing }: { clerkId: string; replacing:
 
     try {
       setStage("uploading");
-      const resumeBlob = await upload(`resumes/${clerkId}/resume.${kind}`, resume, {
+      const resumeBlob = await uploadPresigned(`resumes/${clerkId}/${crypto.randomUUID()}.${kind}`, resume, {
         access: "private",
         handleUploadUrl: "/api/upload",
         contentType: RESUME_TYPES[kind],
       });
       const photoBlob = hasPhoto
-        ? await upload(`uploads/${clerkId}/photo.${ext(photo)}`, photo, {
+        ? await uploadPresigned(`uploads/${clerkId}/${crypto.randomUUID()}.${ext(photo)}`, photo, {
             access: "private",
             handleUploadUrl: "/api/upload",
           })

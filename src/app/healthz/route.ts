@@ -11,7 +11,9 @@ export function GET() {
     clerkSignUpUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL ?? "not set",
     databaseUrl: process.env.DATABASE_URL ? "set" : "MISSING",
     anthropicApiKey: process.env.ANTHROPIC_API_KEY ? "set" : "MISSING",
-    blobToken: process.env.BLOB_READ_WRITE_TOKEN ? "set" : "MISSING",
+    // Blob works with either: the store's OIDC connection (BLOB_STORE_ID) or a read-write token.
+    blobStoreId: process.env.BLOB_STORE_ID ? "set" : "not set",
+    blobToken: process.env.BLOB_READ_WRITE_TOKEN ? "set" : "not set",
     vercelEnv: process.env.VERCEL_ENV ?? "local",
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
   };
