@@ -244,13 +244,14 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Webhook events to enable: checkout.session.completed, checkout.session.async_payment_succeeded, customer.subscription.created/updated/deleted, invoice.paid, invoice.payment_failed.
   - Billing portal (`/api/stripe/portal`) from the dashboard; lapsed sites get a Renew button (no setup fee).
   - Verified locally with a fake Stripe API (`STRIPE_API_HOST`) and real Postgres: bad signature rejected, publish, duplicate event, past_due grace, cancel → lapsed, renewal, late event for an old subscription.
+  - Verified live in Stripe test mode (Oct 2026): checkout with 4242 card → site live, Manage billing opens the portal, cancel → paused + Renew. Annual price set; no setup fee for now. Checkout uses the Checkout Studio settings (see STRIPE_INTEGRATION_TODO.md).
   - Still to do: Resend emails ("your site is live"), card PDFs in that email.
 - [ ] M6 Launch polish
 
 ### Open decisions for Kaeden
 - [ ] Brand name and domain
 - [x] Clerk vs. Auth0: **Clerk**
-- [ ] Setup price and annual price (create them in Stripe; the app reads them from there)
+- [x] Annual price created in Stripe (test mode); setup fee skipped for now
 - [ ] Which business entity runs this (existing LLC or a new one)
 - [ ] Whether meetkaeden.site moves onto the platform as its first profile or stays separate
 
