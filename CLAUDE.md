@@ -234,7 +234,8 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Add content (`/edit`): add an entry (section, title, where/when, text, link, photo) or remove one; server actions `addEntry`/`removeEntry` in `src/lib/actions.ts`, scoped to the owner's profile. Several lines of text become bullet points.
   - "Don't have a resume?" (create flow step 3): `InterviewForm` asks the basics plus 7 questions (`src/lib/resume/questions.ts`), one per screen, typed or spoken (`VoiceTextarea`: browser Web Speech API; hidden where unsupported, with a tip to use the keyboard's dictation). Answers are kept in localStorage until the build succeeds. `/api/resume/interview` turns them into a transcript and drafts the site with the same prompt plus an interview note (clean up spoken wording, never add facts); shares the 5-per-day limit.
   - Editing (`/edit`): every entry has Edit (the same `EntryForm` as Add content, pre-filled; `updateEntry`), Add/Change/Remove photo (`setEntryPhoto`), and Remove. Name, headline, email, phone, and links are editable (`BasicsEditor`, `updateBasics`).
-  - Still to do: editing the Profile layout's key facts, reordering entries, slug picker.
+  - Also on `/edit`: ↑/↓ to reorder entries within a section and whole sections (`moveEntry`, `moveSection`; `reorder()` rewrites positions so each section's entries stay together, and runs after add/edit too); Key facts editor (up to 4, `updateFacts`); Web address picker (`updateSlug`: format, reserved, taken checks; the old address expires immediately with `revalidateTag(..., { expire: 0 })`; `/c/{code}` follows the new slug so printed cards keep working); Start over for drafts only (`startOver`: refused if any subscription row exists; deletes the profile, best-effort deletes its photos and resume from Blob, redirects to `/create`).
+  - Verified against real Postgres by calling the actions directly (temporary auth bypass, not committed).
 - [x] M4 Cards
   - `/c/[code]` redirect (302, scan logging without IPs), 5 card designs rendered in HTML/CSS at card proportions (`src/components/card/`), QR via `qrcode` (EC level Q, 4-module quiet zone). QR URLs use `NEXT_PUBLIC_SITE_URL` (falls back to the Vercel production URL): set it to the permanent domain before anyone prints.
   - PDFs (`src/lib/card-pdf/`, `@react-pdf/renderer`): `GET /api/cards/{trim|bleed|sheet}` for the signed-in owner, published (active or lapsed) sites only. Built on request from the current profile, not stored (so the `cards` table is unused): always matches the saved design and never goes stale. trim = 3.5 × 2 in, 2 pages; bleed = 3.75 × 2.25 in, 2 pages; sheet = Letter, 2 × 5 cards touching, bleed on the outer edge only, crop marks, backs mirrored for long-edge duplex.
@@ -259,6 +260,15 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - The terms promise renewal reminder emails: turn on Stripe → Settings → Billing → "Send emails about upcoming renewals".
   - `scripts/check-proxy.mjs` now checks every page under `src/app/(app)`, not just signed-in ones (the shared layout uses Clerk).
   - Still to do: "report this site" link on public pages, admin takedown.
+
+### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
+- [ ] Form the LLC; pick the brand name and buy the domain
+- [ ] Fill in `src/lib/legal.ts` (business name, contact email, state, refund policy), set `DRAFT: false`; lawyer review of /terms and /privacy
+- [ ] Clerk → Legal/Compliance: require consent to /terms and /privacy at sign-up
+- [ ] Stripe → Settings → Billing: turn on "Send emails about upcoming renewals" (the terms promise it) and successful-payment receipts
+- [ ] `NEXT_PUBLIC_SITE_URL` = the permanent domain (QR codes and emails use it) before anyone prints a card
+- [ ] Resend: verify the domain, set `EMAIL_FROM` to it
+- [ ] Switch Stripe and Clerk to live mode; real prices; replace `BRAND` in the app header/metadata
 
 ### Open decisions for Kaeden
 - [ ] Brand name and domain

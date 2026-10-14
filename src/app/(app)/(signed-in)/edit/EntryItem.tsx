@@ -5,12 +5,29 @@ import { useRef, useState } from "react";
 import { setEntryPhoto } from "@/lib/actions";
 import { uploadPhoto } from "@/lib/upload-photo";
 import { EntryForm, type EntryValues } from "./EntryForm";
+import { MoveButtons } from "./MoveButtons";
 import { RemoveEntryButton } from "./RemoveEntryButton";
 
 const action = "text-sm text-muted underline underline-offset-4 hover:text-ink disabled:opacity-50";
 
 // One entry on the Update page: read view with Edit / photo / Remove, or the edit form in place.
-export function EntryItem({ entry, points, body, clerkId, sections }: { entry: EntryValues & { id: string }; points: string[]; body: string | null; clerkId: string; sections: string[] }) {
+export function EntryItem({
+  entry,
+  points,
+  body,
+  clerkId,
+  sections,
+  first,
+  last,
+}: {
+  entry: EntryValues & { id: string };
+  points: string[];
+  body: string | null;
+  clerkId: string;
+  sections: string[];
+  first: boolean; // first / last in its section, for the move buttons
+  last: boolean;
+}) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -75,6 +92,7 @@ export function EntryItem({ entry, points, body, clerkId, sections }: { entry: E
           </p>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
+          {!(first && last) && <MoveButtons target={{ entry: entry.id }} label={entry.title} first={first} last={last} />}
           <button type="button" onClick={() => setEditing(true)} className={action}>
             Edit
           </button>

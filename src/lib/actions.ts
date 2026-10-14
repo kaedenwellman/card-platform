@@ -1,16 +1,19 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { and, eq, max } from "drizzle-orm";
+import { and, asc, eq, max, ne } from "drizzle-orm";
+import { del } from "@vercel/blob";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
-import { profiles, slides } from "@/db/schema";
+import { profiles, slides, subscriptions } from "@/db/schema";
 import { cardTemplateIds, paletteIds, templateIds } from "./design";
 import { ensureUser, getOwnedProfile } from "./owner";
 import { profileTag } from "./profiles";
 import { takePhoto } from "./resume/draft";
-import { httpsUrl } from "./validation";
+import { isValidSlug, RESERVED_SLUGS } from "./slugs";
+import { factSchema, httpsUrl } from "./validation";
 
 const WebsiteDesign = z.object({ templateId: z.enum(templateIds), paletteId: z.enum(paletteIds) });
 const CardDesign = z.object({ cardTemplateId: z.enum(cardTemplateIds) });
@@ -125,6 +128,7 @@ export async function addEntry(input: z.input<typeof NewEntry>): Promise<AddEntr
     media,
     tint: TINTS[position % TINTS.length],
   });
+  await reorder(profile.id, () => {}); // moves the new entry up next to the rest of its section
   refresh(profile.slug);
   return { ok: true, photoError };
 }
@@ -159,6 +163,7 @@ export async function updateEntry(input: z.input<typeof EditEntry>): Promise<Add
     .update(slides)
     .set({ section: e.section, title: e.title, role: e.role, ...splitText(e.text), link: l.link, ...mediaPatch })
     .where(where);
+  await reorder(profile.id, () => {}); // in case the section changed
   refresh(profile.slug);
   return { ok: true, photoError };
 }
@@ -221,4 +226,147 @@ export async function updateBasics(input: z.input<typeof Basics>): Promise<{ ok:
     .where(eq(profiles.id, profile.id));
   refresh(profile.slug);
   return { ok: true };
+}
+
+// ---------- Reordering ----------
+
+type Group = { section: string; ids: string[] };
+
+// Loads the entries grouped by section (sections in order of first appearance), lets `change`
+// rearrange the groups, then rewrites positions so each section's entries stay together. The site
+// shows entries in position order and builds its section tabs from that order.
+async function reorder(profileId: string, change: (groups: Group[]) => void) {
+  await db().transaction(async (tx) => {
+    const rows = await tx
+      .select({ id: slides.id, section: slides.section, position: slides.position })
+      .from(slides)
+      .where(eq(slides.profileId, profileId))
+      .orderBy(asc(slides.position));
+    const groups: Group[] = [];
+    for (const r of rows) {
+      let g = groups.find((x) => x.section === r.section);
+      if (!g) groups.push((g = { section: r.section, ids: [] }));
+      g.ids.push(r.id);
+    }
+    change(groups);
+    const current = new Map(rows.map((r) => [r.id, r.position]));
+    let position = 0;
+    for (const id of groups.flatMap((g) => g.ids)) {
+      if (current.get(id) !== position) await tx.update(slides).set({ position }).where(eq(slides.id, id));
+      position++;
+    }
+  });
+}
+
+const swap = <T,>(list: T[], i: number, j: number) => {
+  if (i < 0 || j < 0 || i >= list.length || j >= list.length) return;
+  [list[i], list[j]] = [list[j]!, list[i]!];
+};
+
+const Direction = z.enum(["up", "down"]);
+
+// Moves an entry one place up or down within its section.
+export async function moveEntry(slideId: string, direction: "up" | "down") {
+  const id = z.string().uuid().parse(slideId);
+  const step = Direction.parse(direction) === "up" ? -1 : 1;
+  const profile = await ownedProfileOrThrow();
+  await reorder(profile.id, (groups) => {
+    const g = groups.find((x) => x.ids.includes(id));
+    if (g) swap(g.ids, g.ids.indexOf(id), g.ids.indexOf(id) + step);
+  });
+  refresh(profile.slug);
+}
+
+// Moves a whole section (all its entries) one place up or down.
+export async function moveSection(section: string, direction: "up" | "down") {
+  const name = z.string().min(1).max(40).parse(section);
+  const step = Direction.parse(direction) === "up" ? -1 : 1;
+  const profile = await ownedProfileOrThrow();
+  await reorder(profile.id, (groups) => {
+    const i = groups.findIndex((g) => g.section === name);
+    if (i >= 0) swap(groups, i, i + step);
+  });
+  refresh(profile.slug);
+}
+
+// ---------- Key facts (the stat boxes on the Profile layout) ----------
+
+const Facts = z.array(
+  z.object({ label: z.string(), value: z.string(), detail: z.string().default("") }).transform((f) => ({
+    label: f.label.trim(),
+    value: f.value.trim(),
+    detail: f.detail.trim(),
+  })),
+);
+
+export async function updateFacts(input: { label: string; value: string; detail?: string }[]): Promise<{ ok: true } | { ok: false; error: string }> {
+  // Fully empty rows are dropped; half-filled ones get a message.
+  const rows = Facts.parse(input).filter((f) => f.label || f.value || f.detail);
+  if (rows.length > 4) return { ok: false, error: "Up to 4 facts." };
+  const facts = [];
+  for (const [i, f] of rows.entries()) {
+    if (!f.label || !f.value) return { ok: false, error: `Fact ${i + 1} needs a label and a value.` };
+    const parsed = factSchema.safeParse({ label: f.label, value: f.value, detail: f.detail || undefined });
+    if (!parsed.success) {
+      return { ok: false, error: `Fact ${i + 1} is too long (label up to 24 characters, value 60, detail 80).` };
+    }
+    facts.push(parsed.data);
+  }
+  const profile = await ownedProfileOrThrow();
+  await db().update(profiles).set({ facts, updatedAt: new Date() }).where(eq(profiles.id, profile.id));
+  refresh(profile.slug);
+  return { ok: true };
+}
+
+// ---------- Web address ----------
+
+// Changes /{slug}. Printed QR codes keep working because they point to /c/{code}, which always
+// redirects to the current slug; links shared with the old address stop working.
+export async function updateSlug(input: string): Promise<{ ok: true; slug: string } | { ok: false; error: string }> {
+  const slug = z.string().max(60).parse(input).trim().toLowerCase();
+  if (RESERVED_SLUGS.has(slug)) return { ok: false, error: "That address is reserved. Try another." };
+  if (!isValidSlug(slug)) {
+    return { ok: false, error: "Use 3–40 lowercase letters, numbers, or single dashes, starting and ending with a letter or number." };
+  }
+  const profile = await ownedProfileOrThrow();
+  if (slug === profile.slug) return { ok: true, slug };
+  const [taken] = await db()
+    .select({ id: profiles.id })
+    .from(profiles)
+    .where(and(eq(profiles.slug, slug), ne(profiles.id, profile.id)))
+    .limit(1);
+  if (taken) return { ok: false, error: "That address is taken. Try another." };
+  try {
+    await db().update(profiles).set({ slug, updatedAt: new Date() }).where(eq(profiles.id, profile.id));
+  } catch {
+    return { ok: false, error: "That address is taken. Try another." }; // lost a race for the same slug
+  }
+  revalidateTag(profileTag(profile.slug), { expire: 0 }); // the old address 404s right away
+  refresh(slug);
+  revalidatePath("/dashboard");
+  revalidatePath("/card");
+  return { ok: true, slug };
+}
+
+// ---------- Start over (drafts only) ----------
+
+// Deletes an unpublished site so the owner can create a new one from scratch. Published sites
+// can't be deleted here: their QR codes are printed.
+export async function startOver(): Promise<{ ok: false; error: string } | void> {
+  const profile = await ownedProfileOrThrow();
+  if (profile.status !== "draft") return { ok: false, error: "Only unpublished sites can be started over." };
+  // A checkout was started for this site; deleting it could strand a payment.
+  const [sub] = await db().select({ id: subscriptions.id }).from(subscriptions).where(eq(subscriptions.profileId, profile.id)).limit(1);
+  if (sub) return { ok: false, error: "A payment was started for this site, so it can't be deleted. Contact support." };
+  const photoPaths = (await db().select({ media: slides.media }).from(slides).where(eq(slides.profileId, profile.id)))
+    .map((r) => r.media?.url)
+    .filter((u): u is string => Boolean(u?.startsWith("/media/photos/")))
+    .map((u) => u.slice("/media/".length));
+  await db().delete(profiles).where(and(eq(profiles.id, profile.id), eq(profiles.status, "draft")));
+  // Files are cleaned up best-effort; the database row is what matters.
+  const files = [...photoPaths, ...(profile.resumeBlobUrl ? [profile.resumeBlobUrl] : [])];
+  if (files.length) await del(files).catch((err) => console.error("Start over: file cleanup failed", err));
+  revalidateTag(profileTag(profile.slug), { expire: 0 });
+  revalidatePath("/dashboard");
+  redirect("/create");
 }

@@ -2,12 +2,17 @@ import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasDatabase } from "@/db";
+import { siteOrigin } from "@/lib/card";
 import { getPalette, getTemplateId } from "@/lib/design";
 import { ensureUser, getOwnedDraft } from "@/lib/owner";
 import { BasicsEditor } from "./BasicsEditor";
 import { DesignEditor } from "./DesignEditor";
 import { EntryForm } from "./EntryForm";
 import { EntryItem } from "./EntryItem";
+import { FactsEditor } from "./FactsEditor";
+import { MoveButtons } from "./MoveButtons";
+import { SlugEditor } from "./SlugEditor";
+import { StartOverButton } from "./StartOverButton";
 
 export const metadata = { title: "Update your website" };
 
@@ -65,6 +70,19 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
       </section>
 
       <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <h2 className={label}>Web address</h2>
+        <SlugEditor initial={profile.slug} host={new URL(siteOrigin()).host} isLive={!isDraft} />
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <div>
+          <h2 className={label}>Key facts</h2>
+          <p className="mt-2 text-sm text-muted">Up to four stat boxes, like your major or GPA. They appear on the Profile layout.</p>
+        </div>
+        <FactsEditor initial={profile.facts} />
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
         <h2 className={label}>Design</h2>
         <DesignEditor
           initial={{ templateId: getTemplateId(profile.theme.templateId), paletteId: getPalette(profile.theme.paletteId).id }}
@@ -79,15 +97,22 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
           </p>
         ) : (
           <div className="flex flex-col gap-8">
-            {sections.map((section) => (
+            {sections.map((section, si) => (
               <div key={section}>
-                <h3 className="mb-1 text-sm text-muted">{section}</h3>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <h3 className="text-sm text-muted">{section}</h3>
+                  {sections.length > 1 && (
+                    <MoveButtons target={{ section }} label={`the ${section} section`} first={si === 0} last={si === sections.length - 1} />
+                  )}
+                </div>
                 <ul className="border-t border-line">
                   {slides
                     .filter((s) => s.section === section)
-                    .map((s) => (
+                    .map((s, i, list) => (
                       <EntryItem
                         key={s.id}
+                        first={i === 0}
+                        last={i === list.length - 1}
                         clerkId={clerkId}
                         sections={sections}
                         body={s.body}
@@ -119,6 +144,16 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
         </div>
         <EntryForm clerkId={clerkId} sections={sections} />
       </section>
+
+      {isDraft && (
+        <section className="flex flex-col gap-3 border-t border-line pt-8">
+          <h2 className={label}>Start over</h2>
+          <p className="text-sm text-muted">
+            Delete this draft and create a new site from scratch. Only possible before you publish.
+          </p>
+          <StartOverButton />
+        </section>
+      )}
 
       {profile.resumeText && (
         <details className="border-t border-line pt-8">
