@@ -4,7 +4,7 @@ import { BusinessCard } from "@/components/card/BusinessCard";
 import { ScaledFrame } from "@/components/design/ScaledFrame";
 import { cardLine, qrSvg, qrUrl, siteOrigin } from "@/lib/card";
 import { CARD_TEMPLATES, TEMPLATES, getPalette } from "@/lib/design";
-import { HeroBrutal, HeroCinematic, HeroEditorial, HeroOriginal } from "@/components/landing/Heroes";
+import { HeroCinematic, HeroEditorial, HeroOriginal } from "@/components/landing/Heroes";
 import "@/components/landing/looks.css";
 import { EXAMPLES, headshotOf } from "@/seed/examples";
 
@@ -32,7 +32,6 @@ export default async function Home() {
       <HeroOriginal />
       <HeroEditorial />
       <HeroCinematic />
-      <HeroBrutal />
 
       <section className="lp-section border-b border-line py-12">
         <p className={label}>Real sites</p>

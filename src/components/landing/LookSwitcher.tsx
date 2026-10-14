@@ -10,7 +10,6 @@ export const LOOKS = [
   { id: "original", name: "Original" },
   { id: "editorial", name: "Editorial" },
   { id: "cinematic", name: "Cinematic" },
-  { id: "brutal", name: "Brutal" },
 ] as const;
 export type LookId = (typeof LOOKS)[number]["id"];
 
@@ -18,8 +17,8 @@ const KEY = "landing-look";
 const EVENT = "landing-look-change";
 
 // Runs before the page paints (inline in the layout), so a returning visitor never sees a flash
-// of the default look.
-export const lookBootScript = `try{var l=localStorage.getItem("${KEY}");if(l)document.documentElement.dataset.look=l}catch(e){}`;
+// of the default look. A saved look that no longer exists (e.g. a removed one) is ignored.
+export const lookBootScript = `try{var l=localStorage.getItem("${KEY}");if(${JSON.stringify(LOOKS.map((x) => x.id))}.indexOf(l)>0)document.documentElement.dataset.look=l}catch(e){}`;
 
 function current(): LookId {
   const l = document.documentElement.dataset.look;

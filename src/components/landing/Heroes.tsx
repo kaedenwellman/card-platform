@@ -85,26 +85,3 @@ export function HeroCinematic() {
     </section>
   );
 }
-
-// Brutal Shop: mono type on paper, thick borders, hard shadows, a sticker.
-export function HeroBrutal() {
-  return (
-    <section className="look-only look-only-brutal br-hero">
-      <span className="br-sticker" aria-hidden="true">
-        New
-      </span>
-      <p className="br-kicker">Start here</p>
-      <h1 className="br-title">Resume → site + card</h1>
-      <div className="br-row">
-        <ol className="br-chips">
-          <li className="is-on">1 · Upload</li>
-          <li>2 · Pick a layout</li>
-          <li>3 · Print</li>
-        </ol>
-        <Link href="/create" className="br-search">
-          <span aria-hidden="true">⌕</span> Start with your resume…
-        </Link>
-      </div>
-    </section>
-  );
-}

@@ -39,8 +39,7 @@
 .look-only { display: none; }
 html:not([data-look]) .look-only-original,
 html[data-look="original"] .look-only-original,
-html[data-look="editorial"] .look-only-editorial,
-html[data-look="brutal"] .look-only-brutal { display: block; }
+html[data-look="editorial"] .look-only-editorial { display: block; }
 html[data-look="cinematic"] .look-only-cinematic { display: grid; }
 
 /* Full-bleed bands break out of the centered column. */
@@ -49,7 +48,7 @@ html[data-look="cinematic"] .look-only-cinematic { display: grid; }
 html:has(.look-scope) body { overflow-x: clip; }
 
 /* =====================================================================
-   Editorial (Raw Goods): giant grotesk, catalog grid lines, yellow ticker
+   Editorial (Raw Goods): giant grotesk, catalog grid lines, blue ticker
    ===================================================================== */
 
 html[data-look="editorial"]:has(.look-scope) {
@@ -57,7 +56,7 @@ html[data-look="editorial"]:has(.look-scope) {
   --color-ink: #0e0e0e;
   --color-muted: #5e5d58;
   --color-line: #0e0e0e;
-  --color-gold: #ffd400;
+  --color-gold: #1f4bff;
   background: var(--color-bg);
   color-scheme: light;
 }
@@ -108,7 +107,7 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
   font-size: 14px;
   letter-spacing: 0.04em;
 }
-.ed-btn:hover { background: #ffd400; color: var(--color-ink); }
+.ed-btn:hover { background: #1f4bff; color: #fff; }
 @media (min-width: 1024px) {
   .ed-top { grid-template-columns: 2.4fr 1fr; }
   .ed-title { border-right: 1px solid var(--color-line); }
@@ -125,7 +124,8 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
 }
 .ed-ticker {
   overflow: hidden;
-  background: #ffd400;
+  background: #1f4bff;
+  color: #fff;
   border-top: 1px solid var(--color-line);
 }
 .ed-ticker-run {
@@ -283,145 +283,4 @@ html[data-look="cinematic"]:has(.look-scope) .lp-link {
   background: #fff;
   color: #111;
   text-decoration: none;
-}
-
-/* =====================================================================
-   Brutal (Brutal Shop): mono on paper, thick borders, hard shadows
-   ===================================================================== */
-
-html[data-look="brutal"]:has(.look-scope) {
-  --color-bg: #eae9e3;
-  --color-ink: #121212;
-  --color-muted: #4a4a46;
-  --color-line: #121212;
-  --color-gold: #a8e6cf;
-  --font-sans: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, monospace;
-  background: var(--color-bg);
-  color-scheme: light;
-}
-html[data-look="brutal"]:has(.look-scope) body {
-  background:
-    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 3px),
-    var(--color-bg);
-}
-html[data-look="brutal"]:has(.look-scope) .app-header { border-bottom-width: 2px; }
-html[data-look="brutal"]:has(.look-scope) .app-logo {
-  padding: 0 6px;
-  background: var(--color-gold);
-  font-family: var(--font-archivo), sans-serif;
-  font-stretch: 75%;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-}
-html[data-look="brutal"]:has(.look-scope) .app-nav { text-transform: uppercase; letter-spacing: 0.06em; }
-html[data-look="brutal"]:has(.look-scope) .app-signup {
-  border: 2px solid var(--color-ink);
-  border-radius: 0;
-  box-shadow: 3px 3px 0 var(--color-ink);
-}
-html[data-look="brutal"]:has(.look-scope) .look-switcher button { padding: 4px 7px; border-radius: 0; border-width: 2px; font-size: 11px; }
-
-.br-hero {
-  position: relative;
-  padding: 36px 0 34px;
-  border-bottom: 2px solid var(--color-line);
-}
-.br-kicker {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-.br-title {
-  margin-top: 8px;
-  max-width: 11em;
-  padding-right: 84px; /* room for the sticker */
-  font-family: var(--font-archivo), sans-serif;
-  font-size: clamp(46px, 10vw, 112px);
-  font-weight: 800;
-  font-stretch: 75%;
-  line-height: 0.92;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-}
-.br-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 32px;
-}
-.br-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.br-chips li {
-  padding: 9px 16px;
-  border: 2px solid var(--color-line);
-  background: var(--color-bg);
-  box-shadow: 4px 4px 0 var(--color-ink);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.br-chips li.is-on { background: var(--color-ink); color: var(--color-bg); }
-.br-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: min(100%, 360px);
-  padding: 12px 16px;
-  border: 2px solid var(--color-line);
-  font-size: 14px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.br-search:hover { background: var(--color-gold); }
-.br-sticker {
-  position: absolute;
-  top: 18px;
-  right: 0;
-  display: grid;
-  place-items: center;
-  width: clamp(72px, 9vw, 92px);
-  height: clamp(72px, 9vw, 92px);
-  background: #ffe14d;
-  clip-path: polygon(50% 0, 61% 30%, 95% 21%, 72% 48%, 98% 74%, 63% 69%, 50% 100%, 37% 69%, 2% 74%, 28% 48%, 5% 21%, 39% 30%);
-  transform: rotate(12deg);
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-html[data-look="brutal"]:has(.look-scope) .lp-section { border-bottom-width: 2px; }
-html[data-look="brutal"]:has(.look-scope) .lp-label {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--color-ink);
-  color: var(--color-bg);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-}
-html[data-look="brutal"]:has(.look-scope) .lp-frame {
-  border-width: 3px;
-  border-color: var(--color-line);
-  box-shadow: 6px 6px 0 var(--color-ink);
-}
-html[data-look="brutal"]:has(.look-scope) .lp-caption {
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-html[data-look="brutal"]:has(.look-scope) .lp-card .bc { border-radius: 0; box-shadow: 6px 6px 0 var(--color-ink); }
-html[data-look="brutal"]:has(.look-scope) .lp-link {
-  padding: 10px 18px;
-  border: 2px solid var(--color-ink);
-  background: var(--color-gold);
-  box-shadow: 4px 4px 0 var(--color-ink);
-  color: var(--color-ink);
-  text-decoration: none;
-  text-transform: uppercase;
 }
