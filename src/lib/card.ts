@@ -38,8 +38,13 @@ export async function qrSvg(url: string) {
 }
 
 // "Electrical Engineering @ UCCS · D2 Track & Field · Builder" -> first segment, for the card's one line.
+// Over 60 characters, it's cut at a word boundary, dropping a dangling "with", "@", "and" etc.
 export function cardLine(headline: string) {
-  return headline.split(/\s[·|•]\s/)[0].trim().slice(0, 60);
+  const first = headline.split(/\s[·|•]\s/)[0].trim();
+  if (first.length <= 60) return first;
+  const words = first.slice(0, 61).split(/\s+/).slice(0, -1);
+  while (words.length > 1 && /^(@|&|-|–|,|and|or|of|in|at|for|with|the|a|an|to)$/i.test(words[words.length - 1]!)) words.pop();
+  return words.join(" ").replace(/[,;:–-]+$/, "");
 }
 
 export async function cardData(profile: PublicProfile): Promise<CardData> {

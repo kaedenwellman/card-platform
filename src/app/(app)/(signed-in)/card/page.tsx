@@ -26,27 +26,21 @@ export default async function CardPage() {
         </p>
       </header>
 
-      <CardStudio initial={getCardTemplateId(profile.theme.cardTemplateId)} paletteId={palette.id} card={card} />
+      <CardStudio
+        initial={getCardTemplateId(profile.theme.cardTemplateId)}
+        paletteId={palette.id}
+        card={card}
+        canDownload={profile.status === "active" || profile.status === "lapsed"}
+      />
 
-      <div className="grid gap-10 border-t border-line pt-8 md:grid-cols-2">
-        <div>
-          <h2 className="font-bold">Files</h2>
-          <p className="mt-2 text-sm text-muted">
-            One PDF for FedEx Office &quot;Quick Business Cards&quot;, one with bleed for other print shops, and a sheet of
-            10 for printing at home.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {["FedEx / UPS (3.5 × 2 in)", "Print shop (with bleed)", "Home sheet (Letter, 10-up)"].map((f) => (
-              <span key={f} aria-disabled="true" className="rounded-sm border border-line px-3 py-2 text-sm text-muted">
-                {f}
-              </span>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-muted">Downloads aren&apos;t ready yet. Your design choice is saved.</p>
-        </div>
-        <div>
+      <div className="border-t border-line pt-8">
+        <div className="max-w-2xl">
           <h2 className="font-bold">How to print</h2>
           <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-[#CFCCC6]">
+            <li>
+              Use the FedEx / UPS file at a print counter, the bleed file for print shops that ask for bleed, and the home
+              file on your own printer: double-sided, flip on the long edge, then cut on the marks.
+            </li>
             <li>At FedEx Office, choose &quot;Quick Business Cards&quot; (same or next day), not &quot;Premium&quot; (about 5 business days).</li>
             <li>Pick a matte, heavier card stock.</li>
             <li>Print at 100% (never &quot;fit to page&quot;).</li>
