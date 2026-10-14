@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Design tokens shared with the public profile pages (src/components/profile/profile.css). */
-@theme inline {
+@theme {
   --color-bg: #000000;
   --color-ink: #edebe6;
   --color-muted: #8c8a85;

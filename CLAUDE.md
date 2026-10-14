@@ -261,6 +261,11 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - `scripts/check-proxy.mjs` now checks every page under `src/app/(app)`, not just signed-in ones (the shared layout uses Clerk).
   - Still to do: "report this site" link on public pages, admin takedown.
 
+### Landing page looks
+- A style switcher at the top of `/` (`src/components/landing/LookSwitcher.tsx`) flips the landing page between Original, Editorial (Raw Goods: giant grotesk, grid lines, yellow ticker), Cinematic (Orvexa: warm glow, light type, pill button), and Brutal (Brutal Shop: mono, thick borders, hard shadows, sticker). Chosen look is saved in localStorage and applied as `<html data-look>` by an inline script before paint.
+- Each look has its own hero (`Heroes.tsx`; all four render, CSS shows one) and restyles the rest of the page through the color tokens (`@theme` is no longer `inline`, so tokens are CSS variables) plus `lp-*` hooks in `looks.css`. Every rule is scoped with `:has(.look-scope)`, so other pages never change look.
+- Copy in the looks makes no claims we can't back up (no fake review counts).
+
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
 - [ ] Fill in `src/lib/legal.ts` (business name, contact email, state, refund policy), set `DRAFT: false`; lawyer review of /terms and /privacy
