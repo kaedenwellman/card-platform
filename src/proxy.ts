@@ -9,7 +9,7 @@ export default clerkMiddleware();
 export const config = {
   matcher: [
     "/",
-    // Every page under src/app/(app)/(signed-in)/ must be listed (checked by scripts/check-proxy.mjs).
+    // Every page under src/app/(app)/ must be listed (checked by scripts/check-proxy.mjs).
     "/create/:path*",
     "/start/:path*",
     "/edit/:path*",
@@ -18,6 +18,8 @@ export const config = {
     "/preview",
     "/sign-in/:path*",
     "/sign-up/:path*",
+    "/terms",
+    "/privacy",
     // All APIs except Stripe's webhook, which authenticates with its own signature.
     "/api/((?!stripe/webhook).*)",
     "/trpc/(.*)",

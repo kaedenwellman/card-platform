@@ -32,6 +32,14 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           </nav>
         </header>
         <main className="flex-1 py-8">{children}</main>
+        <footer className="flex gap-5 border-t border-line py-5 text-xs text-muted">
+          <Link href="/terms" className="hover:text-ink">
+            Terms
+          </Link>
+          <Link href="/privacy" className="hover:text-ink">
+            Privacy
+          </Link>
+        </footer>
       </div>
     </ClerkProvider>
   );

@@ -255,12 +255,17 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Renewal reminders and receipts come from Stripe itself (Settings → Billing → Subscriptions and emails / Customer emails), not from us.
   - Verified locally with fake Stripe + fake Resend (`RESEND_BASE_URL`) and real Postgres: one live email per subscription, duplicates ignored, no email for a failed first payment, one per failed renewal attempt, Resend outage doesn't block pausing, "back online" after renewal.
 - [ ] M6 Launch polish
+  - Terms (`/terms`) and Privacy (`/privacy`): plain-language drafts written against what the app actually does (providers: Clerk, Vercel, Railway, Anthropic, Stripe, Resend; scan logging without IPs; paused-site behavior; auto-renewal and cancellation). Facts they depend on live in `src/lib/legal.ts` (business name, contact email, state, minimum age, `DRAFT` flag); null values show as bracketed placeholders and `DRAFT: true` shows a draft notice. Linked from the app footer and the Publish row ("By publishing, you agree…"). Have a lawyer review before launch.
+  - The terms promise renewal reminder emails: turn on Stripe → Settings → Billing → "Send emails about upcoming renewals".
+  - `scripts/check-proxy.mjs` now checks every page under `src/app/(app)`, not just signed-in ones (the shared layout uses Clerk).
+  - Still to do: "report this site" link on public pages, admin takedown.
 
 ### Open decisions for Kaeden
 - [ ] Brand name and domain
 - [x] Clerk vs. Auth0: **Clerk**
 - [x] Annual price created in Stripe (test mode); setup fee skipped for now
 - [ ] Which business entity runs this (existing LLC or a new one)
+- [ ] Legal page facts in `src/lib/legal.ts`: business name, public contact email, governing state (Colorado assumed), refund policy (drafted as: no refunds except where required or charged by mistake)
 - [ ] Whether meetkaeden.site moves onto the platform as its first profile or stays separate
 
 @AGENTS.md

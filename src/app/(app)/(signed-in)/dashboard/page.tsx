@@ -83,11 +83,27 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
           <Row
             title="Publish my site"
             body={
-              prices
-                ? `${prices.today} today, then ${prices.renewal}. Your QR code starts working as soon as you publish.`
-                : paymentsConfigured()
-                  ? "Make your site public so your QR code works."
-                  : "Payments aren't set up yet."
+              <>
+                {prices
+                  ? `${prices.today} today, then ${prices.renewal}, renewing automatically until you cancel. Your QR code starts working as soon as you publish.`
+                  : paymentsConfigured()
+                    ? "Make your site public so your QR code works."
+                    : "Payments aren't set up yet."}
+                {paymentsConfigured() && (
+                  <>
+                    {" "}
+                    By publishing, you agree to the{" "}
+                    <Link href="/terms" className="underline hover:text-ink">
+                      Terms
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="underline hover:text-ink">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </>
+                )}
+              </>
             }
           >
             {paymentsConfigured() && (
