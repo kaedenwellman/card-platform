@@ -4,6 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import Stripe from "stripe";
 import { db } from "@/db";
 import { profiles, subscriptions } from "@/db/schema";
+import { notifySiteLive, notifySitePaused } from "./email";
 import { profileTag } from "./profiles";
 
 // Prices live in Stripe (Dashboard → Product catalog), not in code (handoff §11):
@@ -57,13 +58,14 @@ function profileStatusFor(status: Stripe.Subscription.Status): "active" | "lapse
 }
 
 // Pulls the subscription fresh from Stripe and mirrors it into our database. Called for every
-// billing webhook, so event order and retries don't matter.
-export async function syncSubscription(subscriptionId: string, profileIdHint?: string) {
+// billing webhook, so event order and retries don't matter. Emails the owner when their site goes
+// live or pauses. Returns the profile id, or null if the subscription isn't ours.
+export async function syncSubscription(subscriptionId: string, profileIdHint?: string): Promise<string | null> {
   const sub = await stripe().subscriptions.retrieve(subscriptionId);
   const profileId = sub.metadata.profileId || profileIdHint;
   if (!profileId) {
     console.error(`Subscription ${sub.id} has no profileId`);
-    return;
+    return null;
   }
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   // Billing periods are per item in current API versions; use the latest end.
@@ -86,11 +88,12 @@ export async function syncSubscription(subscriptionId: string, profileIdHint?: s
 
   const next = profileStatusFor(sub.status);
   const [p] = await d.select().from(profiles).where(eq(profiles.id, profileId)).limit(1);
-  if (!p || !next || p.status === "removed" || p.status === next) return;
+  if (!p) return null;
+  if (!next || p.status === "removed" || p.status === next) return profileId;
   // An old canceled subscription must not pause a site that a newer one is paying for.
   if (next === "lapsed") {
     const others = await d.select().from(subscriptions).where(eq(subscriptions.profileId, profileId));
-    if (others.some((o) => o.stripeSubscriptionId !== sub.id && profileStatusFor(o.status as Stripe.Subscription.Status) === "active")) return;
+    if (others.some((o) => o.stripeSubscriptionId !== sub.id && profileStatusFor(o.status as Stripe.Subscription.Status) === "active")) return profileId;
   }
   await d
     .update(profiles)
@@ -99,4 +102,9 @@ export async function syncSubscription(subscriptionId: string, profileIdHint?: s
   revalidateTag(profileTag(p.slug), "max");
   revalidatePath("/dashboard");
   console.log(`Profile ${p.slug}: ${p.status} → ${next} (subscription ${sub.id} ${sub.status})`);
+
+  // Emails never block publishing; problems are logged.
+  const email = next === "active" ? notifySiteLive(profileId, sub.id, p.status === "lapsed") : notifySitePaused(profileId, sub.id);
+  await email.catch((err) => console.error(`Email for ${p.slug} failed`, err));
+  return profileId;
 }

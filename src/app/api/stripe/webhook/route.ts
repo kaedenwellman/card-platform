@@ -1,5 +1,12 @@
 import type Stripe from "stripe";
+import { notifyPaymentFailed } from "@/lib/email";
 import { stripe, syncSubscription } from "@/lib/stripe";
+
+function syncInvoiceSubscription(invoice: Stripe.Invoice) {
+  const ref = invoice.parent?.subscription_details?.subscription;
+  const subId = typeof ref === "string" ? ref : ref?.id;
+  return subId ? syncSubscription(subId) : Promise.resolve(null);
+}
 
 // Stripe → us. Publishing, renewals, and lapses all happen here. Every event just re-syncs the
 // subscription from Stripe, so duplicates and out-of-order delivery are harmless.
@@ -31,10 +38,17 @@ export async function POST(request: Request) {
         await syncSubscription(event.data.object.id);
         break;
       case "invoice.paid":
+        await syncInvoiceSubscription(event.data.object);
+        break;
       case "invoice.payment_failed": {
-        const ref = event.data.object.parent?.subscription_details?.subscription;
-        const subId = typeof ref === "string" ? ref : ref?.id;
-        if (subId) await syncSubscription(subId);
+        const invoice = event.data.object;
+        const profileId = await syncInvoiceSubscription(invoice);
+        // Renewals only: a first payment that fails is handled on the Checkout page itself.
+        if (profileId && invoice.billing_reason !== "subscription_create" && invoice.id) {
+          await notifyPaymentFailed(profileId, invoice.id, invoice.attempt_count ?? 1, invoice.hosted_invoice_url ?? null).catch((err) =>
+            console.error("Payment failed email", err),
+          );
+        }
         break;
       }
     }

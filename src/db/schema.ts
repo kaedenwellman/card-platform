@@ -167,3 +167,13 @@ export const subscriptions = pgTable("subscriptions", {
   status: text("status").notNull(),
   currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
 });
+
+// One row per email we've sent, keyed so webhook retries and duplicate events never send twice
+// (e.g. "live:sub_123", "payment_failed:in_456:2").
+export const emailLog = pgTable("email_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  profileId: uuid("profile_id").references(() => profiles.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(),
+  dedupeKey: text("dedupe_key").notNull().unique(),
+  sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});

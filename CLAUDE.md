@@ -242,14 +242,17 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - QR is drawn as one vector path from the `qrcode` module matrix, ~1.19 in tile. Every build decodes that exact matrix with `jsqr` and refuses to serve the file on mismatch (`QrVerifyError`). Verified by rasterizing the PDFs and decoding the QR from the images.
   - Fonts: static Archivo TTFs in `src/fonts/pdf/`, cut from the site's variable woff2 with fontTools (`instancer`, weight/width per design); traced into the route via `outputFileTracingIncludes`.
   - Photo design uses the site's first photo (sharp → square PNG), initials if none.
-- [ ] M5 Payments + launch flow: payments done, emails not yet
+- [x] M5 Payments + launch flow
   - Stripe Checkout (`/api/stripe/checkout`, subscription mode): setup fee (`STRIPE_PRICE_SETUP`, first purchase only) + yearly renewal (`STRIPE_PRICE_ANNUAL`). Prices live in Stripe; the dashboard shows them via `priceSummary()`.
   - Publishing happens only in the webhook (`/api/stripe/webhook`, excluded from the Clerk proxy, verified by `STRIPE_WEBHOOK_SECRET`). Every event re-fetches the subscription from Stripe and syncs it (`syncSubscription` in `src/lib/stripe.ts`): active/trialing/past_due → profile active (sets published_at), canceled/unpaid/incomplete_expired/paused → lapsed, unless another subscription for the profile is active. Removed profiles are never changed. Note: billing period end is on subscription items in current Stripe API versions.
   - Webhook events to enable: checkout.session.completed, checkout.session.async_payment_succeeded, customer.subscription.created/updated/deleted, invoice.paid, invoice.payment_failed.
   - Billing portal (`/api/stripe/portal`) from the dashboard; lapsed sites get a Renew button (no setup fee).
   - Verified locally with a fake Stripe API (`STRIPE_API_HOST`) and real Postgres: bad signature rejected, publish, duplicate event, past_due grace, cancel → lapsed, renewal, late event for an old subscription.
   - Verified live in Stripe test mode (Oct 2026): checkout with 4242 card → site live, Manage billing opens the portal, cancel → paused + Renew. Annual price set; no setup fee for now. Checkout uses the Checkout Studio settings (see STRIPE_INTEGRATION_TODO.md).
-  - Still to do: Resend emails ("your site is live"), card PDFs in that email.
+  - Emails (`src/lib/email/`, Resend; env `RESEND_API_KEY`, `EMAIL_FROM`, optional `EMAIL_REPLY_TO`): "Your site is live" (draft → active; "back online" wording after a lapse) links the site and `/card` for the PDFs; "Your site is paused" (→ lapsed) links Renew; "Your payment didn't go through" on `invoice.payment_failed` for renewals only (not `subscription_create`), one per attempt, linking Stripe's hosted invoice. Sent to the owner's Clerk email (fallback: the site's contact email).
+  - Each email is sent at most once: `email_log.dedupe_key` (`site_live:{sub}`, `site_paused:{sub}`, `payment_failed:{invoice}:{attempt}`) plus Resend's idempotency key. Email never blocks publishing or fails the webhook: a failed send is logged and dropped. Unconfigured → skipped.
+  - Renewal reminders and receipts come from Stripe itself (Settings → Billing → Subscriptions and emails / Customer emails), not from us.
+  - Verified locally with fake Stripe + fake Resend (`RESEND_BASE_URL`) and real Postgres: one live email per subscription, duplicates ignored, no email for a failed first payment, one per failed renewal attempt, Resend outage doesn't block pausing, "back online" after renewal.
 - [ ] M6 Launch polish
 
 ### Open decisions for Kaeden
