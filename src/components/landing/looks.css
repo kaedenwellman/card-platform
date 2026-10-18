@@ -39,8 +39,64 @@
 .look-only { display: none; }
 html:not([data-look]) .look-only-original,
 html[data-look="original"] .look-only-original,
-html[data-look="editorial"] .look-only-editorial { display: block; }
 html[data-look="cinematic"] .look-only-cinematic { display: grid; }
+html[data-look="editorial"] .look-only-editorial { display: block; }
+
+/* ---------- Spinning 3D card (all looks) ---------- */
+
+.hero-split {
+  gap: 40px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .hero-split { grid-template-columns: 1.15fr 1fr; }
+}
+.card3d-stage {
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  height: clamp(280px, 40vw, 440px);
+  perspective: 1400px;
+  cursor: grab;
+  touch-action: pan-y; /* vertical swipes still scroll the page on phones */
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.card3d-stage[data-dragging] { cursor: grabbing; }
+.card3d-stage:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 4px; border-radius: 8px; }
+/* Tipped onto its corner: the spin axis runs diagonally through the card. */
+.card3d-tilt {
+  width: min(340px, 72%);
+  transform: rotateZ(-32deg) rotateX(12deg);
+  transform-style: preserve-3d;
+}
+.card3d {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.card3d-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.card3d-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+.card3d .bc { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 28px 50px -18px rgba(0, 0, 0, 0.55); }
+.card3d-shadow {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  width: 44%;
+  height: 22px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.35), transparent);
+  pointer-events: none;
+}
 
 /* Full-bleed bands break out of the centered column. */
 .ed-hero,
@@ -81,7 +137,7 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
 }
 .ed-title {
   padding: 18px 16px 22px;
-  font-size: clamp(40px, 7.4vw, 120px);
+  font-size: clamp(40px, 6.6vw, 104px);
   font-weight: 650;
   font-stretch: 100%;
   line-height: 0.86;
@@ -91,8 +147,7 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
 .ed-side {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
+  gap: 20px;
   padding: 16px;
   border-top: 1px solid var(--color-line);
   font-size: 18px;
@@ -109,9 +164,17 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
 }
 .ed-btn:hover { background: #1f4bff; color: #fff; }
 @media (min-width: 1024px) {
-  .ed-top { grid-template-columns: 2.4fr 1fr; }
-  .ed-title { border-right: 1px solid var(--color-line); }
-  .ed-side { border-top: 0; padding: 24px; justify-content: center; }
+  .ed-top { grid-template-columns: 1.55fr 1fr; }
+  .ed-copy { border-right: 1px solid var(--color-line); }
+}
+.ed-cardcol {
+  display: grid;
+  place-items: center;
+  padding: 8px 16px;
+  border-top: 1px solid var(--color-line);
+}
+@media (min-width: 1024px) {
+  .ed-cardcol { border-top: 0; }
 }
 .ed-strip {
   padding: 9px 16px;
@@ -224,7 +287,18 @@ html[data-look="cinematic"]:has(.look-scope) .app-signup { border-radius: 999px;
 .cn-content {
   position: relative;
   max-width: 760px;
-  padding: 88px 16px;
+  padding: 72px 16px 8px;
+}
+.cn-card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  padding: 0 16px 48px;
+}
+@media (min-width: 1024px) {
+  .cn-hero { grid-template-columns: minmax(16px, 1fr) minmax(0, 580px) minmax(0, 500px) minmax(16px, 1fr); }
+  .cn-content { grid-column: 2; padding: 96px 24px 96px 0; text-align: left; }
+  .cn-card { grid-column: 3; padding: 0; }
 }
 .cn-kicker {
   font-size: 13px;

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { BusinessCard } from "@/components/card/BusinessCard";
 import { ScaledFrame } from "@/components/design/ScaledFrame";
 import { cardLine, qrSvg, qrUrl, siteOrigin } from "@/lib/card";
-import { CARD_TEMPLATES, TEMPLATES, getPalette } from "@/lib/design";
-import { HeroCinematic, HeroEditorial, HeroOriginal } from "@/components/landing/Heroes";
+import { CARD_TEMPLATES, TEMPLATES, getPalette, type CardTemplateId, type PaletteId } from "@/lib/design";
+import { HeroCinematic, HeroEditorial, HeroOriginal, type HeroCard } from "@/components/landing/Heroes";
 import "@/components/landing/looks.css";
 import { EXAMPLES, headshotOf } from "@/seed/examples";
 
@@ -26,12 +26,19 @@ export default async function Home() {
   );
   const cardPalettes = ["gold", "crimson", "ocean", "charcoal", "gold"] as const;
 
+  // The spinning card in each hero (John Doe's card, styled to suit the look).
+  const heroCard = (design: CardTemplateId, palette: PaletteId): HeroCard => ({
+    front: <BusinessCard design={design} palette={getPalette(palette)} side="front" card={faces[0]} />,
+    back: <BusinessCard design={design} palette={getPalette(palette)} side="back" card={faces[0]} />,
+    label: `Example business card for ${faces[0].name}, front and back`,
+  });
+
   return (
     // look-scope: the landing-page looks (looks.css) only apply on pages containing it.
     <div className="look-scope flex flex-col pb-16">
-      <HeroOriginal />
-      <HeroEditorial />
-      <HeroCinematic />
+      <HeroOriginal card={heroCard("classic", "gold")} />
+      <HeroEditorial card={heroCard("bold", "ocean")} />
+      <HeroCinematic card={heroCard("classic", "charcoal")} />
 
       <section className="lp-section border-b border-line py-12">
         <p className={label}>Real sites</p>

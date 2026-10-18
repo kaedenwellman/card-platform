@@ -265,6 +265,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 - A style switcher at the top of `/` (`src/components/landing/LookSwitcher.tsx`) flips the landing page between Original, Editorial (Raw Goods: giant grotesk, grid lines, blue ticker) and Cinematic (Orvexa: warm glow, light type, pill button). A Brutal look was tried and removed. Chosen look is saved in localStorage and applied as `<html data-look>` by an inline script before paint.
 - Each look has its own hero (`Heroes.tsx`; all four render, CSS shows one) and restyles the rest of the page through the color tokens (`@theme` is no longer `inline`, so tokens are CSS variables) plus `lp-*` hooks in `looks.css`. Every rule is scoped with `:has(.look-scope)`, so other pages never change look.
 - Copy in the looks makes no claims we can't back up (no fake review counts).
+- Every hero has the copy on the left and a spinnable 3D business card on the right (`Card3D.tsx`): CSS 3D, tipped onto its corner (`rotateZ(-32deg)`), floats and slowly spins; drag/swipe (horizontal; vertical swipes still scroll) or arrow keys turn it, with a short coast after a fling. One rAF loop per card, paused while off screen; no auto-motion under prefers-reduced-motion.
 
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
