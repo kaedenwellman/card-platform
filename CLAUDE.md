@@ -269,6 +269,9 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 - Landing (`/`): copy on the left, a spinnable 3D business card tipped onto its corner on the right (`src/components/landing/Card3D.tsx`: CSS 3D, floats and slowly spins, drag/swipe/arrow keys to turn, paused off screen, no auto-motion under reduced motion), then a black strip and a scrolling blue ticker (`Heroes.tsx`, `looks.css`). The Original/Cinematic/Brutal looks and the style switcher were tried and removed.
 - Customers' public sites (`/[slug]`, previews, examples) and the card designs keep their own palettes; the app theme doesn't apply to them.
 
+### Setup guide (dashboard)
+- `src/app/(app)/(signed-in)/dashboard/SetupGuide.tsx`: a 4-step "Getting set up" tutorial at the top of the dashboard: make your site → check every line → publish → print and test your card. Steps check themselves off from real state (a site exists; published; at least one QR scan logged), the current step gets a blue edge and one button, and the guide disappears when all four are done (hidden for taken-down sites).
+
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
 - [ ] Set `ADMIN_EMAILS` in Vercel (your email) so reports reach you and `/admin` works

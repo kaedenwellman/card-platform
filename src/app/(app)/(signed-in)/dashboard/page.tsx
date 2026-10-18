@@ -1,11 +1,12 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { StripeButton } from "@/components/billing/StripeButton";
 import { db, hasDatabase } from "@/db";
-import { subscriptions } from "@/db/schema";
+import { scans, subscriptions } from "@/db/schema";
 import { ensureUser, getOwnedProfile } from "@/lib/owner";
 import { paymentsConfigured, priceSummary } from "@/lib/stripe";
+import { SetupGuide } from "./SetupGuide";
 
 export const metadata = { title: "Dashboard" };
 
@@ -14,9 +15,9 @@ const linkBtn = (primary: boolean) =>
     primary ? "bg-ink text-bg hover:bg-gold hover:text-white" : "border border-line hover:border-muted"
   }`;
 
-function Row({ title, body, children, dim = false }: { title: string; body: React.ReactNode; children?: React.ReactNode; dim?: boolean }) {
+function Row({ title, body, children, dim = false, id }: { title: string; body: React.ReactNode; children?: React.ReactNode; dim?: boolean; id?: string }) {
   return (
-    <li className="flex flex-col gap-3 border-b border-line py-5 sm:flex-row sm:items-center sm:justify-between">
+    <li id={id} className="flex flex-col gap-3 border-b border-line py-5 sm:flex-row sm:items-center sm:justify-between">
       <div className={dim ? "opacity-50" : ""}>
         <h2 className="font-bold">{title}</h2>
         <p className="mt-1 text-sm text-muted">{body}</p>
@@ -35,6 +36,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     ? await db().select().from(subscriptions).where(eq(subscriptions.profileId, profile.id)).orderBy(desc(subscriptions.currentPeriodEnd)).limit(1)
     : [];
   const prices = profile && profile.status !== "active" ? await priceSummary() : null;
+  const [{ scanCount }] = profile
+    ? await db().select({ scanCount: count() }).from(scans).where(eq(scans.profileId, profile.id))
+    : [{ scanCount: 0 }];
+  const published = Boolean(profile && (profile.publishedAt || profile.status === "active" || profile.status === "lapsed"));
   const renewsOn = sub?.currentPeriodEnd?.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   return (
@@ -70,6 +75,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         <p className="border-l-2 border-gold pl-3 text-sm">You&apos;re live. Share your link or print your cards.</p>
       )}
 
+      {profile?.status !== "removed" && <SetupGuide hasSite={Boolean(profile)} published={published} scanned={scanCount > 0} />}
+
       <ul className="border-t border-line">
         {!profile ? (
           <Row title="Create website and business card" body="Pick a layout, colors, and a card, then upload your resume.">
@@ -83,6 +90,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
         {profile?.status === "draft" && (
           <Row
+            id="publish"
             title="Publish my site"
             body={
               <>
