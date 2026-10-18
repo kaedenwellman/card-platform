@@ -52,6 +52,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
               </>
             ) : profile.status === "lapsed" ? (
               `/${profile.slug} · paused`
+            ) : profile.status === "removed" ? (
+              `/${profile.slug} · taken down for breaking our Terms of Service. Check your email for details.`
             ) : (
               `/${profile.slug} · draft, not public yet`
             )}

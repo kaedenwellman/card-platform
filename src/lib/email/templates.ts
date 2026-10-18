@@ -95,3 +95,58 @@ export function sitePausedEmail({ name, renewUrl }: { name: string; renewUrl: st
     ].join("\n"),
   };
 }
+
+export function reportReceivedEmail({
+  siteName,
+  siteUrl,
+  reason,
+  details,
+  reporterEmail,
+  adminUrl,
+}: {
+  siteName: string;
+  siteUrl: string;
+  reason: string;
+  details: string;
+  reporterEmail: string | null;
+  adminUrl: string;
+}): Message {
+  const from = reporterEmail ? `From ${reporterEmail}.` : "No reply address given.";
+  return {
+    subject: `Report: ${siteName} (${reason})`,
+    html: layout({
+      heading: "A page was reported",
+      paragraphs: [
+        `<strong>${esc(siteName)}</strong><br><a href="${esc(siteUrl)}" style="color:#111111">${esc(siteUrl.replace(/^https?:\/\//, ""))}</a>`,
+        `<strong>Reason:</strong> ${esc(reason)}`,
+        details ? `<strong>Details:</strong> ${esc(details).replace(/\n/g, "<br>")}` : "No details given.",
+        esc(from),
+      ],
+      button: { label: "Review in admin", href: adminUrl },
+    }),
+    text: [`A page was reported: ${siteName} (${siteUrl})`, `Reason: ${reason}`, details ? `Details: ${details}` : "No details given.", from, "", `Review: ${adminUrl}`].join("\n"),
+  };
+}
+
+export function siteRemovedEmail({ name, contact, termsUrl }: { name: string; contact: string | null; termsUrl: string }): Message {
+  const appeal = contact
+    ? `If you think this is a mistake, email ${contact} and we'll take another look.`
+    : "If you think this is a mistake, reply to this email and we'll take another look.";
+  return {
+    subject: "Your site was taken down",
+    html: layout({
+      heading: `Hi ${esc(firstName(name))}, your site was taken down`,
+      paragraphs: [
+        "We removed your site because it broke our Terms of Service. It's no longer visible, and its QR code no longer opens it.",
+        esc(appeal),
+      ],
+      button: { label: "Read the Terms", href: termsUrl },
+    }),
+    text: [
+      `Hi ${firstName(name)},`,
+      "",
+      "We removed your site because it broke our Terms of Service. It's no longer visible, and its QR code no longer opens it.",
+      appeal,
+    ].join("\n"),
+  };
+}

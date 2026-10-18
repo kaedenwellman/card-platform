@@ -75,6 +75,9 @@ export const profiles = pgTable(
     ...timestamps,
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     publishedAt: timestamp("published_at", { withTimezone: true }),
+    // Takedowns: the status to go back to if an admin restores the page, and when it was removed.
+    removedFromStatus: profileStatus("removed_from_status"),
+    removedAt: timestamp("removed_at", { withTimezone: true }),
   },
   (t) => [uniqueIndex("profiles_slug_idx").on(t.slug), uniqueIndex("profiles_qr_code_idx").on(t.qrCode)],
 );
@@ -177,3 +180,23 @@ export const emailLog = pgTable("email_log", {
   dedupeKey: text("dedupe_key").notNull().unique(),
   sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// "Report this page" submissions from public sites. No IP or browser details are stored.
+export const reportStatus = pgEnum("report_status", ["open", "dismissed", "actioned"]);
+
+export const reports = pgTable(
+  "reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    profileId: uuid("profile_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    reason: text("reason").notNull(),
+    details: text("details").notNull().default(""),
+    reporterEmail: text("reporter_email"),
+    status: reportStatus("status").notNull().default("open"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+  (t) => [index("reports_status_idx").on(t.status, t.createdAt), index("reports_profile_idx").on(t.profileId, t.createdAt)],
+);

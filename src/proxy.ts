@@ -15,6 +15,7 @@ export const config = {
     "/edit/:path*",
     "/dashboard/:path*",
     "/card/:path*",
+    "/admin/:path*",
     "/preview",
     "/sign-in/:path*",
     "/sign-up/:path*",

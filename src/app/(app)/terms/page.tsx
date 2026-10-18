@@ -65,8 +65,8 @@ export default function TermsPage() {
           ]}
         />
         <p>
-          We may remove content or suspend a site that breaks these rules. If you see a site that does, email{" "}
-          {email}.
+          We may remove content or suspend a site that breaks these rules. If you see a site that does, use the
+          &ldquo;Report this page&rdquo; link at the bottom of it, or email {email}.
         </p>
       </Section>
 

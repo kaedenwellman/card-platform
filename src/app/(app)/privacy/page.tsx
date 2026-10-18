@@ -41,6 +41,10 @@ export default function PrivacyPage() {
               store their IP address.
             </>,
             <>
+              <strong>Reports:</strong> if someone uses &ldquo;Report this page&rdquo;, we keep their reason and
+              details, and their email only if they choose to give it.
+            </>,
+            <>
               <strong>Usage data:</strong> anonymous, aggregated page-view statistics, collected without cookies. Our
               hosting provider also keeps short-lived technical logs (which can include IP addresses) for security and
               troubleshooting.

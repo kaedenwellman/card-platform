@@ -18,6 +18,7 @@ export function GET() {
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ? "set" : "MISSING",
     stripePriceSetup: process.env.STRIPE_PRICE_SETUP ? "set" : "not set (optional)",
     stripePriceAnnual: process.env.STRIPE_PRICE_ANNUAL ? "set" : "MISSING",
+    adminEmails: process.env.ADMIN_EMAILS ? `set (${process.env.ADMIN_EMAILS.split(",").filter((e) => e.trim()).length})` : "MISSING",
     resendApiKey: process.env.RESEND_API_KEY ? "set" : "MISSING",
     emailFrom: process.env.EMAIL_FROM ? `set (${process.env.EMAIL_FROM.replace(/^.*@/, "@").replace(/>$/, "")})` : "MISSING",
     vercelEnv: process.env.VERCEL_ENV ?? "local",

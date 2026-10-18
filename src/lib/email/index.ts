@@ -4,7 +4,8 @@ import { Resend } from "resend";
 import { db } from "@/db";
 import { emailLog, profiles, users } from "@/db/schema";
 import { siteOrigin } from "@/lib/card";
-import { paymentFailedEmail, sitePausedEmail, siteLiveEmail, type Message } from "./templates";
+import { LEGAL } from "@/lib/legal";
+import { paymentFailedEmail, reportReceivedEmail, siteLiveEmail, sitePausedEmail, siteRemovedEmail, type Message } from "./templates";
 
 // RESEND_API_KEY and EMAIL_FROM (e.g. "Cards <hello@yourdomain.com>", on a domain verified in Resend).
 export const emailConfigured = () => Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
@@ -15,7 +16,7 @@ const resend = () => (client ??= new Resend(process.env.RESEND_API_KEY));
 // Sends a message at most once per dedupeKey (the key is logged before sending). Never throws: an
 // email problem must not block publishing or make Stripe retry the webhook. A failed send is
 // logged and its key released. Without Resend configured, emails are skipped.
-async function sendOnce({ to, kind, dedupeKey, profileId, message }: { to: string; kind: string; dedupeKey: string; profileId: string; message: Message }) {
+async function sendOnce({ to, kind, dedupeKey, profileId, message }: { to: string | string[]; kind: string; dedupeKey: string; profileId: string; message: Message }) {
   if (!emailConfigured()) {
     console.log(`Email "${kind}" to ${to} skipped: Resend isn't configured`);
     return;
@@ -95,5 +96,49 @@ export async function notifyPaymentFailed(profileId: string, invoiceId: string, 
     dedupeKey: `payment_failed:${invoiceId}:${attempt}`,
     profileId,
     message: paymentFailedEmail({ name: r.name, payUrl: payUrl || `${origin}/dashboard`, siteUrl: `${origin}/${r.slug}` }),
+  });
+}
+
+// ADMIN_EMAILS: comma-separated; these people get report alerts and can use /admin.
+export const adminEmails = () =>
+  (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+export async function notifyReport(report: { id: string; profileId: string; reason: string; details: string; reporterEmail: string | null }) {
+  const to = adminEmails();
+  if (!to.length) {
+    console.log(`Report ${report.id} saved; no ADMIN_EMAILS to notify`);
+    return;
+  }
+  const [p] = await db().select({ slug: profiles.slug, name: profiles.name }).from(profiles).where(eq(profiles.id, report.profileId)).limit(1);
+  if (!p) return;
+  const origin = siteOrigin();
+  await sendOnce({
+    to,
+    kind: "report",
+    dedupeKey: `report:${report.id}`,
+    profileId: report.profileId,
+    message: reportReceivedEmail({
+      siteName: p.name,
+      siteUrl: `${origin}/${p.slug}`,
+      reason: report.reason,
+      details: report.details,
+      reporterEmail: report.reporterEmail,
+      adminUrl: `${origin}/admin`,
+    }),
+  });
+}
+
+export async function notifySiteRemoved(profileId: string, removedAt: Date) {
+  const r = await recipient(profileId);
+  if (!r) return;
+  await sendOnce({
+    to: r.to,
+    kind: "site_removed",
+    dedupeKey: `site_removed:${profileId}:${removedAt.getTime()}`,
+    profileId,
+    message: siteRemovedEmail({ name: r.name, contact: LEGAL.contactEmail, termsUrl: `${siteOrigin()}/terms` }),
   });
 }

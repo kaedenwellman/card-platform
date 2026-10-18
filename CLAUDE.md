@@ -259,7 +259,8 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
   - Terms (`/terms`) and Privacy (`/privacy`): plain-language drafts written against what the app actually does (providers: Clerk, Vercel, Railway, Anthropic, Stripe, Resend; scan logging without IPs; paused-site behavior; auto-renewal and cancellation). Facts they depend on live in `src/lib/legal.ts` (business name, contact email, state, minimum age, `DRAFT` flag); null values show as bracketed placeholders and `DRAFT: true` shows a draft notice. Linked from the app footer and the Publish row ("By publishing, you agree…"). Have a lawyer review before launch.
   - The terms promise renewal reminder emails: turn on Stripe → Settings → Billing → "Send emails about upcoming renewals".
   - `scripts/check-proxy.mjs` now checks every page under `src/app/(app)`, not just signed-in ones (the shared layout uses Clerk).
-  - Still to do: "report this site" link on public pages, admin takedown.
+  - Reports and takedowns: every public page ends with a "Report this page" strip (in the site's colors) linking to `/report?site={slug}` (public, outside Clerk). The form (`src/lib/report-actions.ts`: reason from `REPORT_REASONS`, optional details and email, honeypot, at most 20 stored per page per day) saves to `reports` and emails `ADMIN_EMAILS`. `/admin` (signed-in, 404 for anyone not in `ADMIN_EMAILS`) lists open reports grouped by site, taken-down sites, and a find-by-address box. Take down (`takeDown`): status `removed` (page and QR 404 immediately), remembers `removed_from_status`, closes the site's open reports, emails the owner. Restore (`restore`): status recomputed from billing (paying → active, else lapsed if it was ever published, else draft). Billing isn't touched by takedowns; cancel/refund in Stripe by hand. The owner's dashboard says the site was taken down.
+  - Verified locally (real Postgres, fake Resend, temporary auth bypass not committed): form submit → stored + emailed to all admins; bad email and unknown site messages; honeypot and the daily cap drop silently; takedown → 404 on page and QR, reports actioned, owner emailed once (repeat takedown is a no-op); restore → active with a paying subscription, lapsed after cancel; non-admin gets "Not allowed".
 
 ### Landing page looks
 - **Locked in (Oct 2026):** Kaeden approved this direction: copy on the left, spinning 3D card on its corner on the right. Keep it; don't redesign the hero without asking.
@@ -270,6 +271,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
+- [ ] Set `ADMIN_EMAILS` in Vercel (your email) so reports reach you and `/admin` works
 - [ ] Fill in `src/lib/legal.ts` (business name, contact email, state, refund policy), set `DRAFT: false`; lawyer review of /terms and /privacy
 - [ ] Clerk → Legal/Compliance: require consent to /terms and /privacy at sign-up
 - [ ] Stripe → Settings → Billing: turn on "Send emails about upcoming renewals" (the terms promise it) and successful-payment receipts
