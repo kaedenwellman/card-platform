@@ -62,14 +62,14 @@ export function FactsEditor({ initial }: { initial: { label: string; value: stri
       ))}
       <div className="flex flex-wrap items-center gap-4">
         {facts.length < 4 && (
-          <button type="button" onClick={() => setFacts((fs) => [...fs, empty()])} className="rounded-sm border border-line px-4 py-2 text-sm hover:border-muted">
+          <button type="button" onClick={() => setFacts((fs) => [...fs, empty()])} className="border border-line px-4 py-2 text-sm hover:border-muted">
             Add a fact
           </button>
         )}
-        <button type="button" onClick={save} disabled={saving} className="rounded-sm bg-gold px-5 py-2 text-sm font-bold text-black hover:bg-ink disabled:opacity-60">
+        <button type="button" onClick={save} disabled={saving} className="bg-ink px-5 py-2 text-sm font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-60">
           {saving ? "Saving…" : "Save facts"}
         </button>
-        {message && <span className={`text-sm ${message.ok ? "text-muted" : "text-red-300"}`}>{message.text}</span>}
+        {message && <span className={`text-sm ${message.ok ? "text-muted" : "text-red-700"}`}>{message.text}</span>}
       </div>
     </div>
   );

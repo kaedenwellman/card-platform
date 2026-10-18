@@ -8,7 +8,7 @@ import { AdminButton } from "./AdminButton";
 
 export const metadata = { title: "Admin", robots: { index: false, follow: false } };
 
-const label = "font-mono text-[11px] uppercase tracking-[0.22em] text-muted";
+const label = "inline-block self-start border border-line px-2.5 py-1 text-[12px] uppercase tracking-[0.04em] text-ink";
 const when = (d: Date) => d.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
 
 type Profile = typeof profiles.$inferSelect;
@@ -81,7 +81,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   return (
     <section className="flex flex-col gap-10">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">Admin</h1>
+        <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">Admin</h1>
         <p className="mt-2 text-sm text-muted">
           Reports and takedowns. Taking a page down doesn&apos;t touch billing: cancel or refund in Stripe if needed.
         </p>
@@ -92,9 +92,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           name="site"
           defaultValue={lookup}
           placeholder="Find a site by address, e.g. jane-smith"
-          className="min-w-0 flex-1 rounded-sm border border-line bg-transparent px-3 py-2 outline-none focus:border-muted"
+          className="min-w-0 flex-1 border border-line bg-transparent px-3 py-2 outline-none focus:border-muted"
         />
-        <button className="rounded-sm border border-line px-4 py-2 hover:border-muted">Find</button>
+        <button className="border border-line px-4 py-2 hover:border-muted">Find</button>
       </form>
       {lookup && (
         <div className="-mt-6 border-b border-line pb-6">

@@ -16,7 +16,7 @@ import { StartOverButton } from "./StartOverButton";
 
 export const metadata = { title: "Update your website" };
 
-const label = "font-mono text-[11px] uppercase tracking-[0.22em] text-muted";
+const label = "inline-block self-start border border-line px-2.5 py-1 text-[12px] uppercase tracking-[0.04em] text-ink";
 
 export default async function EditPage({ searchParams }: PageProps<"/edit">) {
   const { photo } = await searchParams;
@@ -32,17 +32,17 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
     <section className="flex flex-col gap-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold leading-tight [font-stretch:112%]">{profile.name}</h1>
+          <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">{profile.name}</h1>
           <p className="mt-1 text-sm text-muted">
             /{profile.slug} · {isDraft ? "draft, not public yet" : "live"}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href="/preview" className="rounded-sm bg-gold px-5 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink">
+          <Link href="/preview" className="bg-ink px-5 py-3 font-bold text-bg hover:bg-gold hover:text-white">
             Preview my site
           </Link>
           {isDraft && (
-            <Link href="/start" className="rounded-sm border border-line px-5 py-3 hover:border-muted">
+            <Link href="/start" className="border border-line px-5 py-3 hover:border-muted">
               Upload a different resume
             </Link>
           )}
@@ -52,7 +52,7 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
       <p className="-mt-4 border-l-2 border-gold pl-3 text-sm text-muted">
         The AI wrote this from what you gave it. Read every line before you share your site.
       </p>
-      {typeof photo === "string" && <p className="-mt-4 text-sm text-red-300">Your photo wasn&apos;t added: {photo}</p>}
+      {typeof photo === "string" && <p className="-mt-4 text-sm text-red-700">Your photo wasn&apos;t added: {photo}</p>}
 
       <section className="flex flex-col gap-4 border-t border-line pt-8">
         <h2 className={label}>Name and contact</h2>

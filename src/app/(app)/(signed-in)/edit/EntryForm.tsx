@@ -6,7 +6,7 @@ import { VoiceTextarea } from "@/components/VoiceTextarea";
 import { addEntry, updateEntry } from "@/lib/actions";
 import { uploadPhoto } from "@/lib/upload-photo";
 
-export const fieldClass = "w-full rounded-sm border border-line bg-transparent p-3 text-base outline-none focus:border-muted";
+export const fieldClass = "w-full border border-line bg-transparent p-3 text-base outline-none focus:border-muted";
 const NEW = "__new__";
 
 export type EntryValues = {
@@ -140,7 +140,7 @@ export function EntryForm({
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={v.photoUrl} alt="" className="h-16 w-24 border border-line object-cover" />
-            <button type="button" onClick={() => setRemovePhoto(true)} className="text-sm text-muted underline underline-offset-4 hover:text-red-300">
+            <button type="button" onClick={() => setRemovePhoto(true)} className="text-sm text-muted underline underline-offset-4 hover:text-red-700">
               Remove photo
             </button>
           </div>
@@ -163,20 +163,20 @@ export function EntryForm({
             setPhoto(e.target.files?.[0] ?? null);
             setRemovePhoto(false);
           }}
-          className="rounded-sm border border-line p-3 file:mr-3 file:rounded-sm file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+          className="border border-line p-3 file:mr-3 file: file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
         />
       </div>
       <div className="flex flex-wrap items-center gap-4">
-        <button type="submit" disabled={busy} className="rounded-sm bg-gold px-6 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60">
+        <button type="submit" disabled={busy} className="bg-ink px-6 py-3 font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-60">
           {busy ? "Saving…" : editing ? "Save changes" : "Add to my site"}
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} disabled={busy} className="rounded-sm border border-line px-6 py-3 hover:border-muted">
+          <button type="button" onClick={onCancel} disabled={busy} className="border border-line px-6 py-3 hover:border-muted">
             Cancel
           </button>
         )}
         {message && (
-          <span aria-live="polite" className={`text-sm ${message.kind === "error" ? "text-red-300" : "text-muted"}`}>
+          <span aria-live="polite" className={`text-sm ${message.kind === "error" ? "text-red-700" : "text-muted"}`}>
             {message.text}
           </span>
         )}

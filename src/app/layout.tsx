@@ -21,8 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // suppressHydrationWarning: the landing page's look switcher sets data-look on <html> before hydration.
-    <html lang="en" className={`${archivo.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${archivo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
         <Analytics />

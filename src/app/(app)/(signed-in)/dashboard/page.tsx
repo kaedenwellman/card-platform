@@ -10,8 +10,8 @@ import { paymentsConfigured, priceSummary } from "@/lib/stripe";
 export const metadata = { title: "Dashboard" };
 
 const linkBtn = (primary: boolean) =>
-  `self-start rounded-sm px-5 py-2.5 text-center font-bold [font-stretch:110%] sm:self-auto ${
-    primary ? "bg-gold text-black hover:bg-ink" : "border border-line hover:border-muted"
+  `self-start px-5 py-2.5 text-center font-bold sm:self-auto ${
+    primary ? "bg-ink text-bg hover:bg-gold hover:text-white" : "border border-line hover:border-muted"
   }`;
 
 function Row({ title, body, children, dim = false }: { title: string; body: React.ReactNode; children?: React.ReactNode; dim?: boolean }) {
@@ -40,7 +40,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   return (
     <section className="flex flex-col gap-8">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">{cu?.firstName ? `Hi, ${cu.firstName}` : "Your account"}</h1>
+        <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">{cu?.firstName ? `Hi, ${cu.firstName}` : "Your account"}</h1>
         {profile && (
           <p className="mt-2 text-sm text-muted">
             {profile.status === "active" ? (

@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
-/* Design tokens shared with the public profile pages (src/components/profile/profile.css). */
+/* App-wide theme: the Editorial look (after Raw Goods). Off-white paper, near-black ink and rules,
+   one electric-blue accent. "gold" is the historical name of the accent token. Customers' public
+   sites don't use these; they have their own palettes (src/lib/design.ts, profile.css). */
 @theme {
-  --color-bg: #000000;
-  --color-ink: #edebe6;
-  --color-muted: #8c8a85;
-  --color-line: #262626;
-  --color-gold: #cfb87c;
+  --color-bg: #f4f3ee;
+  --color-ink: #0e0e0e;
+  --color-muted: #5e5d58;
+  --color-line: #0e0e0e;
+  --color-gold: #1f4bff;
   --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
-  background: #000;
-  color-scheme: dark;
+  background: var(--color-bg);
+  color-scheme: light;
 }
 
 body {

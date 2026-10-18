@@ -36,13 +36,13 @@ export function AdminButton({
         type="button"
         onClick={go}
         disabled={pending}
-        className={`rounded-sm border px-3 py-1.5 text-sm disabled:opacity-50 ${
-          danger ? "border-red-400/60 text-red-300 hover:border-red-300" : "border-line hover:border-muted"
+        className={` border px-3 py-1.5 text-sm disabled:opacity-50 ${
+          danger ? "border-red-700/60 text-red-700 hover:border-red-700" : "border-line hover:border-muted"
         }`}
       >
         {pending ? "…" : label}
       </button>
-      {error && <span className="text-sm text-red-300">{error}</span>}
+      {error && <span className="text-sm text-red-700">{error}</span>}
     </span>
   );
 }

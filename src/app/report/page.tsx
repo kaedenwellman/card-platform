@@ -14,7 +14,7 @@ export default async function ReportPage({ searchParams }: PageProps<"/report">)
 
   return (
     <main className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
-      <h1 className="text-3xl font-extrabold [font-stretch:112%]">Report a page</h1>
+      <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">Report a page</h1>
       {found ? (
         <>
           <p className="text-muted">

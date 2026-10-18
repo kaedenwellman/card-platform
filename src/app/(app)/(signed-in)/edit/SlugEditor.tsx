@@ -33,7 +33,7 @@ export function SlugEditor({ initial, host, isLive }: { initial: string; host: s
         <span className="flex items-stretch">
           <span className="flex items-center rounded-l-sm border border-r-0 border-line px-3 text-sm text-muted">{host}/</span>
           <input
-            className={`${fieldClass} min-w-0 flex-1 rounded-l-none`}
+            className={`${fieldClass} min-w-0 flex-1 `}
             value={slug}
             onChange={(e) => {
               setSlug(clean(e.target.value));
@@ -57,11 +57,11 @@ export function SlugEditor({ initial, host, isLive }: { initial: string; host: s
           type="button"
           onClick={save}
           disabled={!changed || saving}
-          className="rounded-sm bg-gold px-5 py-2 text-sm font-bold text-black hover:bg-ink disabled:opacity-40"
+          className="bg-ink px-5 py-2 text-sm font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-40"
         >
           {saving ? "Saving…" : "Save address"}
         </button>
-        {error && <span className="text-sm text-red-300">{error}</span>}
+        {error && <span className="text-sm text-red-700">{error}</span>}
       </div>
     </div>
   );

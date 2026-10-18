@@ -17,17 +17,17 @@ export default async function StartPage() {
 
   return (
     <section className="max-w-xl">
-      <h1 className="text-3xl font-extrabold [font-stretch:112%]">Upload a new resume</h1>
+      <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">Upload a new resume</h1>
       <p className="mt-3 text-muted">
         We&apos;ll turn it into a draft of your site: one slide per job, project, and activity, in your
         resume&apos;s order and wording. You review everything before anything goes live.
       </p>
       {profile && profile.status !== "draft" ? (
-        <p className="mt-8 rounded-md border border-line p-4">
+        <p className="mt-8 border border-line p-4">
           Your site is already published. <Link href="/edit" className="text-gold underline">Open the editor</Link> to make changes.
         </p>
       ) : used >= DAILY_PARSE_LIMIT ? (
-        <p className="mt-8 rounded-md border border-line p-4">
+        <p className="mt-8 border border-line p-4">
           You&apos;ve uploaded {DAILY_PARSE_LIMIT} resumes in the last day. Try again tomorrow, or{" "}
           <Link href="/edit" className="text-gold underline">review your current draft</Link>.
         </p>

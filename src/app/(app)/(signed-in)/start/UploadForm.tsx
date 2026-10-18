@@ -87,7 +87,7 @@ export function UploadForm({
           required
           accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           disabled={busy}
-          className="rounded-sm border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+          className="border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
         />
       </label>
       <label className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ export function UploadForm({
           type="file"
           accept="image/jpeg,image/png,image/webp"
           disabled={busy}
-          className="rounded-sm border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+          className="border border-line p-3 file:mr-3 file:rounded file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
         />
       </label>
 
@@ -111,14 +111,14 @@ export function UploadForm({
       <button
         type="submit"
         disabled={busy}
-        className="rounded-sm bg-gold px-6 py-4 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60"
+        className="bg-ink px-6 py-4 font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-60"
       >
         {stage === "uploading" ? "Uploading…" : stage === "reading" ? "Reading your resume…" : submitLabel}
       </button>
 
       <p aria-live="polite" className="min-h-6 text-sm">
         {stage === "reading" && <span className="text-muted">This usually takes 30 to 60 seconds. Keep this page open.</span>}
-        {error && <span className="text-red-300">{error}</span>}
+        {error && <span className="text-red-700">{error}</span>}
       </p>
     </form>
   );

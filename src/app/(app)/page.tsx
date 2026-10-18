@@ -4,11 +4,11 @@ import { BusinessCard } from "@/components/card/BusinessCard";
 import { ScaledFrame } from "@/components/design/ScaledFrame";
 import { cardLine, qrSvg, qrUrl, siteOrigin } from "@/lib/card";
 import { CARD_TEMPLATES, TEMPLATES, getPalette, type CardTemplateId, type PaletteId } from "@/lib/design";
-import { HeroCinematic, HeroEditorial, HeroOriginal, type HeroCard } from "@/components/landing/Heroes";
+import { HeroEditorial, type HeroCard } from "@/components/landing/Heroes";
 import "@/components/landing/looks.css";
 import { EXAMPLES, headshotOf } from "@/seed/examples";
 
-const label = "lp-label font-mono text-[11px] uppercase tracking-[0.22em] text-muted";
+const label = "lp-label inline-block self-start border border-line px-2.5 py-1 text-[12px] uppercase tracking-[0.04em] text-ink";
 
 export default async function Home() {
   // One sample person per card design, so the row shows different names and majors.
@@ -26,7 +26,7 @@ export default async function Home() {
   );
   const cardPalettes = ["gold", "crimson", "ocean", "charcoal", "gold"] as const;
 
-  // The spinning card in each hero (John Doe's card, styled to suit the look).
+  // The spinning card in the hero (John Doe's card).
   const heroCard = (design: CardTemplateId, palette: PaletteId): HeroCard => ({
     front: <BusinessCard design={design} palette={getPalette(palette)} side="front" card={faces[0]} />,
     back: <BusinessCard design={design} palette={getPalette(palette)} side="back" card={faces[0]} />,
@@ -34,11 +34,8 @@ export default async function Home() {
   });
 
   return (
-    // look-scope: the landing-page looks (looks.css) only apply on pages containing it.
-    <div className="look-scope flex flex-col pb-16">
-      <HeroOriginal card={heroCard("classic", "gold")} />
+    <div className="flex flex-col pb-16">
       <HeroEditorial card={heroCard("bold", "ocean")} />
-      <HeroCinematic card={heroCard("classic", "charcoal")} />
 
       <section className="lp-section border-b border-line py-12">
         <p className={label}>Real sites</p>

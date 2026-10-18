@@ -18,7 +18,7 @@ export function RemoveEntryButton({ id, title }: { id: string; title: string }) 
           router.refresh();
         });
       }}
-      className="text-sm text-muted underline underline-offset-4 hover:text-red-300 disabled:opacity-50"
+      className="text-sm text-muted underline underline-offset-4 hover:text-red-700 disabled:opacity-50"
     >
       {pending ? "Removing…" : "Remove"}
     </button>

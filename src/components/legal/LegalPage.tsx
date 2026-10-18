@@ -6,7 +6,7 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
   return (
     <article className="mx-auto flex max-w-2xl flex-col gap-8 pb-8">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">{title}</h1>
+        <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">{title}</h1>
         <p className="mt-2 text-sm text-muted">Effective {LEGAL.effectiveDate}</p>
         {LEGAL.DRAFT && (
           <p className="mt-4 border-l-2 border-gold pl-3 text-sm text-muted">
@@ -15,7 +15,7 @@ export function LegalPage({ title, children }: { title: string; children: ReactN
           </p>
         )}
       </header>
-      <div className="flex flex-col gap-8 text-[15px] leading-relaxed text-[#CFCCC6] [&_a]:text-ink [&_a]:underline [&_strong]:text-ink">
+      <div className="flex flex-col gap-8 text-[15px] leading-relaxed text-ink/80 [&_a]:text-ink [&_a]:underline [&_strong]:text-ink">
         {children}
       </div>
     </article>

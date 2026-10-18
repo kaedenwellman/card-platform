@@ -35,13 +35,13 @@ export function StripeButton({
         type="button"
         onClick={go}
         disabled={busy}
-        className={`self-start rounded-sm px-5 py-2.5 text-center font-bold [font-stretch:110%] disabled:opacity-60 sm:self-auto ${
-          primary ? "bg-gold text-black hover:bg-ink" : "border border-line hover:border-muted"
+        className={`self-start px-5 py-2.5 text-center font-bold disabled:opacity-60 sm:self-auto ${
+          primary ? "bg-ink text-bg hover:bg-gold hover:text-white" : "border border-line hover:border-muted"
         }`}
       >
         {busy ? "Opening…" : children}
       </button>
-      {error && <span className="text-sm text-red-300">{error}</span>}
+      {error && <span className="text-sm text-red-700">{error}</span>}
     </span>
   );
 }

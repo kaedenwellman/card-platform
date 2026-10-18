@@ -37,7 +37,7 @@ export function CreateWizard({
         <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
           Step {step + 1} of {STEPS.length}
         </p>
-        <h1 className="mt-2 text-3xl font-extrabold [font-stretch:112%]">
+        <h1 className="mt-2 text-4xl font-semibold uppercase leading-[0.95] tracking-tight">
           {step === 2 && interview ? "Build your resume" : STEPS[step]}
         </h1>
       </header>
@@ -56,7 +56,7 @@ export function CreateWizard({
       )}
       {step === 2 &&
         (limitReached ? (
-          <p className="rounded-md border border-line p-4">
+          <p className="border border-line p-4">
             You&apos;ve uploaded {limit} resumes in the last day. Try again tomorrow.
           </p>
         ) : interview ? (
@@ -97,14 +97,14 @@ export function CreateWizard({
       {step < 2 && (
         <div className="flex gap-3">
           {step > 0 && (
-            <button type="button" onClick={() => setStep(step - 1)} className="rounded-sm border border-line px-6 py-3 hover:border-muted">
+            <button type="button" onClick={() => setStep(step - 1)} className="border border-line px-6 py-3 hover:border-muted">
               Back
             </button>
           )}
           <button
             type="button"
             onClick={next}
-            className="rounded-sm bg-gold px-8 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink"
+            className="bg-ink px-8 py-3 font-bold text-bg hover:bg-gold hover:text-white"
           >
             Next →
           </button>

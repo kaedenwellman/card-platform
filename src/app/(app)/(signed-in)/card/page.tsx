@@ -19,7 +19,7 @@ export default async function CardPage() {
   return (
     <section className="flex flex-col gap-10">
       <header>
-        <h1 className="text-3xl font-extrabold [font-stretch:112%]">Print my business card</h1>
+        <h1 className="text-4xl font-semibold uppercase leading-[0.95] tracking-tight">Print my business card</h1>
         <p className="mt-2 max-w-2xl text-muted">
           The QR code on the back opens <span className="text-ink">{qrUrl(profile.qrCode)}</span>. That link stays the
           same when you edit your site, so printed cards keep working.
@@ -36,7 +36,7 @@ export default async function CardPage() {
       <div className="border-t border-line pt-8">
         <div className="max-w-2xl">
           <h2 className="font-bold">How to print</h2>
-          <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-[#CFCCC6]">
+          <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-ink/80">
             <li>
               Use the FedEx / UPS file at a print counter, the bleed file for print shops that ask for bleed, and the home
               file on your own printer: double-sided, flip on the long edge, then cut on the marks.

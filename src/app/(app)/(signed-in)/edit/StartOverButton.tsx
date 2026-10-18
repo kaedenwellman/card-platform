@@ -19,10 +19,10 @@ export function StartOverButton() {
 
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <button type="button" onClick={go} disabled={pending} className="rounded-sm border border-red-400/60 px-4 py-2 text-sm text-red-300 hover:border-red-300 disabled:opacity-50">
+      <button type="button" onClick={go} disabled={pending} className="border border-red-700/60 px-4 py-2 text-sm text-red-700 hover:border-red-700 disabled:opacity-50">
         {pending ? "Deleting…" : "Start over"}
       </button>
-      {error && <span className="text-sm text-red-300">{error}</span>}
+      {error && <span className="text-sm text-red-700">{error}</span>}
     </div>
   );
 }

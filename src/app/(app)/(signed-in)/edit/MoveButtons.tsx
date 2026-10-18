@@ -24,7 +24,7 @@ export function MoveButtons({
       router.refresh();
     });
   const btn =
-    "grid h-8 w-8 place-items-center rounded-sm border border-line text-sm text-muted hover:border-muted hover:text-ink disabled:opacity-30 disabled:hover:border-line";
+    "grid h-8 w-8 place-items-center border border-line text-sm text-muted hover:border-muted hover:text-ink disabled:opacity-30 disabled:hover:border-line";
 
   return (
     <span className="inline-flex gap-1.5" aria-busy={pending}>

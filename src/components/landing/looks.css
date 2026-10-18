@@ -1,56 +1,8 @@
-/* Landing-page looks, chosen with the switcher at the top (LookSwitcher.tsx) and applied as
-   <html data-look="…">. Every rule is scoped to pages containing .look-scope (only the landing
-   page), so navigating to the dashboard never inherits a look. "original" is the default and
-   changes nothing. */
+/* Landing page styles: the Editorial look (after Raw Goods) with the spinning 3D card. The color
+   tokens and type it relies on are the app-wide ones in src/app/globals.css. */
 
-/* ---------- Switcher (all looks) ---------- */
+/* ---------- Spinning 3D card ---------- */
 
-.look-switcher {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 0;
-  font-size: 12px;
-  border-bottom: 1px solid var(--color-line);
-}
-.look-switcher-label {
-  margin-right: 4px;
-  color: var(--color-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 11px;
-}
-.look-switcher button {
-  padding: 5px 10px;
-  border: 1px solid var(--color-line);
-  border-radius: 999px;
-  color: var(--color-muted);
-}
-.look-switcher button:hover { color: var(--color-ink); }
-.look-switcher button[aria-pressed="true"] {
-  background: var(--color-ink);
-  border-color: var(--color-ink);
-  color: var(--color-bg);
-}
-
-/* ---------- Which hero shows ---------- */
-
-.look-only { display: none; }
-html:not([data-look]) .look-only-original,
-html[data-look="original"] .look-only-original,
-html[data-look="cinematic"] .look-only-cinematic { display: grid; }
-html[data-look="editorial"] .look-only-editorial { display: block; }
-
-/* ---------- Spinning 3D card (all looks) ---------- */
-
-.hero-split {
-  gap: 40px;
-  align-items: center;
-}
-@media (min-width: 1024px) {
-  .hero-split { grid-template-columns: 1.15fr 1fr; }
-}
 .card3d-stage {
   position: relative;
   width: 100%;
@@ -99,36 +51,11 @@ html[data-look="editorial"] .look-only-editorial { display: block; }
 }
 
 /* Full-bleed bands break out of the centered column. */
-.ed-hero,
-.cn-hero { margin-inline: calc(50% - 50vw); }
-html:has(.look-scope) body { overflow-x: clip; }
+.ed-hero { margin-inline: calc(50% - 50vw); }
+html:has(.ed-hero) body { overflow-x: clip; }
 
-/* =====================================================================
-   Editorial (Raw Goods): giant grotesk, catalog grid lines, blue ticker
-   ===================================================================== */
+/* ---------- Hero: giant grotesk, catalog grid lines, black strip, blue ticker ---------- */
 
-html[data-look="editorial"]:has(.look-scope) {
-  --color-bg: #f4f3ee;
-  --color-ink: #0e0e0e;
-  --color-muted: #5e5d58;
-  --color-line: #0e0e0e;
-  --color-gold: #1f4bff;
-  background: var(--color-bg);
-  color-scheme: light;
-}
-html[data-look="editorial"]:has(.look-scope) .app-header { padding-block: 10px; }
-html[data-look="editorial"]:has(.look-scope) .app-logo {
-  font-stretch: 100%;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-html[data-look="editorial"]:has(.look-scope) .app-nav { text-transform: uppercase; letter-spacing: 0.02em; }
-html[data-look="editorial"]:has(.look-scope) .app-signup {
-  border-radius: 0;
-  background: var(--color-ink);
-  color: var(--color-bg);
-}
 
 .ed-hero { border-bottom: 1px solid var(--color-line); }
 .ed-top {
@@ -210,7 +137,7 @@ html[data-look="editorial"]:has(.look-scope) .app-signup {
   .ed-ticker-run { animation: none; }
 }
 
-html[data-look="editorial"]:has(.look-scope) .lp-label {
+.lp-label {
   display: inline-block;
   padding: 6px 10px;
   border: 1px solid var(--color-line);
@@ -219,142 +146,12 @@ html[data-look="editorial"]:has(.look-scope) .lp-label {
   letter-spacing: 0.03em;
   color: var(--color-ink);
 }
-html[data-look="editorial"]:has(.look-scope) .lp-frame { border-color: var(--color-line); }
-html[data-look="editorial"]:has(.look-scope) .lp-caption {
+.lp-frame { border-color: var(--color-line); }
+.lp-caption {
   padding-top: 6px;
   border-top: 1px solid var(--color-line);
   font-size: 13px;
   text-transform: uppercase;
 }
-html[data-look="editorial"]:has(.look-scope) .lp-desc { font-size: 12px; text-transform: uppercase; }
-html[data-look="editorial"]:has(.look-scope) .lp-link { color: var(--color-ink); text-transform: uppercase; }
-
-/* =====================================================================
-   Cinematic (Orvexa): warm glow, light type, pill button
-   ===================================================================== */
-
-html[data-look="cinematic"]:has(.look-scope) {
-  --color-bg: #110b09;
-  --color-ink: #f3ece6;
-  --color-muted: #a8988e;
-  --color-line: #2a201c;
-  --color-gold: #f3ece6;
-  background: var(--color-bg);
-}
-html[data-look="cinematic"]:has(.look-scope) .app-logo {
-  font-stretch: 100%;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-html[data-look="cinematic"]:has(.look-scope) .app-header { border-color: transparent; }
-html[data-look="cinematic"]:has(.look-scope) .app-signup { border-radius: 999px; font-weight: 500; font-stretch: 100%; }
-
-.cn-hero {
-  position: relative;
-  place-items: center;
-  min-height: min(86vh, 820px);
-  overflow: hidden;
-  text-align: center;
-}
-.cn-glow {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(34% 12% at 30% 30%, rgba(255, 214, 170, 0.55), transparent 70%),
-    radial-gradient(60% 28% at 34% 32%, rgba(255, 140, 60, 0.45), transparent 70%),
-    radial-gradient(48% 44% at 78% 60%, rgba(190, 50, 40, 0.42), transparent 70%),
-    radial-gradient(70% 55% at 50% 105%, rgba(130, 45, 30, 0.4), transparent 70%),
-    linear-gradient(170deg, #2b1712 0%, #140c0a 55%, #2a1210 100%);
-}
-.cn-glow::before {
-  content: "";
-  position: absolute;
-  inset: -10%;
-  background:
-    linear-gradient(100deg, transparent 22%, rgba(255, 170, 90, 0.35) 34%, transparent 48%),
-    linear-gradient(96deg, transparent 32%, rgba(255, 222, 186, 0.28) 40%, transparent 47%);
-  filter: blur(28px);
-  transform: rotate(-9deg);
-}
-.cn-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 12.5%),
-    radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.6));
-}
-.cn-content {
-  position: relative;
-  max-width: 760px;
-  padding: 72px 16px 8px;
-}
-.cn-card {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-  padding: 0 16px 48px;
-}
-@media (min-width: 1024px) {
-  .cn-hero { grid-template-columns: minmax(16px, 1fr) minmax(0, 580px) minmax(0, 500px) minmax(16px, 1fr); }
-  .cn-content { grid-column: 2; padding: 96px 24px 96px 0; text-align: left; }
-  .cn-card { grid-column: 3; padding: 0; }
-}
-.cn-kicker {
-  font-size: 13px;
-  letter-spacing: 0.38em;
-  text-transform: uppercase;
-  color: rgba(243, 236, 230, 0.72);
-}
-.cn-title {
-  margin-top: 22px;
-  font-size: clamp(36px, 6.2vw, 64px);
-  font-weight: 300;
-  font-stretch: 100%;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-.cn-sub {
-  margin-top: 14px;
-  font-size: 20px;
-  font-weight: 300;
-  color: rgba(243, 236, 230, 0.8);
-}
-.cn-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 34px;
-  padding: 16px 30px;
-  border-radius: 999px;
-  background: #fff;
-  color: #111;
-  font-size: 17px;
-  font-weight: 500;
-}
-.cn-btn:hover { background: #f1e3d6; }
-.cn-note {
-  margin-top: 40px;
-  font-size: 14px;
-  color: rgba(243, 236, 230, 0.72);
-}
-
-html[data-look="cinematic"]:has(.look-scope) .lp-section { border-color: var(--color-line); }
-html[data-look="cinematic"]:has(.look-scope) .lp-label {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.38em;
-}
-html[data-look="cinematic"]:has(.look-scope) .lp-frame {
-  border-color: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-}
-html[data-look="cinematic"]:has(.look-scope) .lp-caption { font-weight: 300; font-size: 15px; }
-html[data-look="cinematic"]:has(.look-scope) .lp-steps { font-weight: 300; }
-html[data-look="cinematic"]:has(.look-scope) .lp-link {
-  padding: 10px 22px;
-  border-radius: 999px;
-  background: #fff;
-  color: #111;
-  text-decoration: none;
-}
+.lp-desc { font-size: 12px; text-transform: uppercase; }
+.lp-link { color: var(--color-ink); text-transform: uppercase; }

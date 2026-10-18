@@ -66,13 +66,13 @@ export function BasicsEditor({ initial }: { initial: Basics }) {
         </label>
       ))}
       <div className="flex flex-wrap items-center gap-4 sm:col-span-2">
-        <button type="submit" disabled={busy} className="rounded-sm bg-gold px-6 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60">
+        <button type="submit" disabled={busy} className="bg-ink px-6 py-3 font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-60">
           {busy ? "Saving…" : "Save"}
         </button>
-        <button type="button" onClick={() => { setV(initial); setEditing(false); }} className="rounded-sm border border-line px-6 py-3 hover:border-muted">
+        <button type="button" onClick={() => { setV(initial); setEditing(false); }} className="border border-line px-6 py-3 hover:border-muted">
           Cancel
         </button>
-        {error && <span className="text-sm text-red-300">{error}</span>}
+        {error && <span className="text-sm text-red-700">{error}</span>}
       </div>
     </form>
   );

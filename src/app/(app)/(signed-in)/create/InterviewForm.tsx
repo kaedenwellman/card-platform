@@ -11,7 +11,7 @@ const STORAGE_KEY = "resume-interview-v1";
 const empty = (): InterviewAnswers =>
   ({ name: "", email: "", phone: "", ...Object.fromEntries(INTERVIEW_QUESTIONS.map((q) => [q.id, ""])) }) as InterviewAnswers;
 
-const input = "w-full rounded-sm border border-line bg-transparent p-3 text-base outline-none focus:border-muted";
+const input = "w-full border border-line bg-transparent p-3 text-base outline-none focus:border-muted";
 
 // "Don't have a resume?" One question per screen; answers can be typed or spoken.
 export function InterviewForm({
@@ -95,7 +95,7 @@ export function InterviewForm({
 
       {step === 0 ? (
         <div className="flex flex-col gap-5">
-          <h2 className="text-2xl font-extrabold [font-stretch:112%]">Let&apos;s build your resume together.</h2>
+          <h2 className="text-2xl font-semibold uppercase leading-tight tracking-tight">Let&apos;s build your resume together.</h2>
           <p className="-mt-2 text-sm text-muted">
             A few questions about school, work, and what you&apos;re into. Answer as much or as little as you want, typed
             or out loud. We turn your answers into your site, using only what you tell us.
@@ -122,14 +122,14 @@ export function InterviewForm({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-              className="rounded-sm border border-line p-3 file:mr-3 file:rounded-sm file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
+              className="border border-line p-3 file:mr-3 file: file:border-0 file:bg-ink file:px-3 file:py-1 file:text-black"
             />
           </label>
         </div>
       ) : (
         q && (
           <div className="flex flex-col gap-3">
-            <label htmlFor={`q-${q.id}`} className="text-2xl font-extrabold [font-stretch:112%]">
+            <label htmlFor={`q-${q.id}`} className="text-2xl font-semibold uppercase leading-tight tracking-tight">
               {q.question}
             </label>
             <p className="-mt-1 text-sm text-muted">{q.hint}</p>
@@ -138,14 +138,14 @@ export function InterviewForm({
         )
       )}
 
-      {error && <p className="text-sm text-red-300">{error}</p>}
+      {error && <p className="text-sm text-red-700">{error}</p>}
 
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled={busy}
           onClick={() => (step === 0 ? onCancel() : go(step - 1))}
-          className="rounded-sm border border-line px-6 py-3 hover:border-muted disabled:opacity-50"
+          className="border border-line px-6 py-3 hover:border-muted disabled:opacity-50"
         >
           Back
         </button>
@@ -154,7 +154,7 @@ export function InterviewForm({
             type="button"
             onClick={build}
             disabled={busy}
-            className="rounded-sm bg-gold px-8 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-60"
+            className="bg-ink px-8 py-3 font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-60"
           >
             {busy ? "Building your site…" : "Build my website and card"}
           </button>
@@ -162,7 +162,7 @@ export function InterviewForm({
           <button
             type="button"
             onClick={() => (step === 0 && !a.name.trim() ? setError("Add your name to continue.") : go(step + 1))}
-            className="rounded-sm bg-gold px-8 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink"
+            className="bg-ink px-8 py-3 font-bold text-bg hover:bg-gold hover:text-white"
           >
             {step > 0 && !a[q!.id].trim() ? "Skip" : "Next →"}
           </button>

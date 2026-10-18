@@ -107,7 +107,7 @@ export function EntryItem({
           <RemoveEntryButton id={entry.id} title={entry.title} />
           <input ref={file} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => changePhoto(e.target.files?.[0] ?? null)} />
           {busy && <span className="text-sm text-muted">{busy}</span>}
-          {error && <span className="text-sm text-red-300">{error}</span>}
+          {error && <span className="text-sm text-red-700">{error}</span>}
         </div>
       </div>
     </li>

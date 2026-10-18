@@ -30,11 +30,11 @@ export function DesignEditor({ initial }: { initial: WebsiteDesign }) {
           type="button"
           onClick={save}
           disabled={!dirty || saving}
-          className="rounded-md bg-gold px-6 py-3 font-bold text-black [font-stretch:110%] hover:bg-ink disabled:opacity-50"
+          className="bg-ink px-6 py-3 font-bold text-bg hover:bg-gold hover:text-white disabled:opacity-50"
         >
           {saving ? "Saving…" : dirty ? "Save design" : "Saved"}
         </button>
-        {error && <span className="text-sm text-red-300">{error}</span>}
+        {error && <span className="text-sm text-red-700">{error}</span>}
       </div>
     </div>
   );

@@ -101,15 +101,15 @@ export function VoiceTextarea({
           onChange={(e) => onChange(e.target.value)}
           rows={rows}
           placeholder={placeholder}
-          className="w-full resize-y rounded-sm border border-line bg-transparent p-3 pb-14 text-base leading-relaxed outline-none focus:border-muted"
+          className="w-full resize-y border border-line bg-transparent p-3 pb-14 text-base leading-relaxed outline-none focus:border-muted"
         />
         {supported && (
           <button
             type="button"
             onClick={toggle}
             aria-pressed={listening}
-            className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-sm border px-3 py-2 text-sm ${
-              listening ? "border-red-400 text-red-300" : "border-line text-ink hover:border-muted"
+            className={`absolute bottom-3 right-3 flex items-center gap-2 border px-3 py-2 text-sm ${
+              listening ? "border-red-700 text-red-700" : "border-line text-ink hover:border-muted"
             }`}
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -122,7 +122,7 @@ export function VoiceTextarea({
       </div>
       <p aria-live="polite" className="min-h-5 text-sm text-muted">
         {error ? (
-          <span className="text-red-300">{error}</span>
+          <span className="text-red-700">{error}</span>
         ) : listening ? (
           interim ? <span className="italic">{interim}</span> : "Listening…"
         ) : supported ? (

@@ -71,7 +71,7 @@ export function CardStudio({
       <div className="flex flex-col gap-2">
         <CardDesignPicker value={design} onChange={choose} paletteId={paletteId} card={card} />
         <p aria-live="polite" className="min-h-5 text-sm text-muted">
-          {saving ? "Saving…" : error ? <span className="text-red-300">{error}</span> : null}
+          {saving ? "Saving…" : error ? <span className="text-red-700">{error}</span> : null}
         </p>
       </div>
 
@@ -90,7 +90,7 @@ export function CardStudio({
                     type="button"
                     onClick={() => download(f)}
                     disabled={saving || busy !== null}
-                    className="rounded-sm border border-line px-4 py-2 text-sm hover:border-muted disabled:opacity-50"
+                    className="border border-line px-4 py-2 text-sm hover:border-muted disabled:opacity-50"
                   >
                     {busy === f.id ? "Making PDF…" : "Download PDF"}
                   </button>
@@ -98,7 +98,7 @@ export function CardStudio({
               ))}
             </ul>
             <p aria-live="polite" className="mt-3 min-h-5 text-sm">
-              {downloadError && <span className="text-red-300">{downloadError}</span>}
+              {downloadError && <span className="text-red-700">{downloadError}</span>}
             </p>
           </>
         ) : (
