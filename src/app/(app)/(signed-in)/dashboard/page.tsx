@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, gte, max } from "drizzle-orm";
 import Link from "next/link";
 import { StripeButton } from "@/components/billing/StripeButton";
 import { db, hasDatabase } from "@/db";
@@ -7,6 +7,8 @@ import { scans, subscriptions } from "@/db/schema";
 import { ensureUser, getOwnedProfile } from "@/lib/owner";
 import { paymentsConfigured, priceSummary } from "@/lib/stripe";
 import { SetupGuide } from "./SetupGuide";
+
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000);
 
 export const metadata = { title: "Dashboard" };
 
@@ -36,9 +38,18 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     ? await db().select().from(subscriptions).where(eq(subscriptions.profileId, profile.id)).orderBy(desc(subscriptions.currentPeriodEnd)).limit(1)
     : [];
   const prices = profile && profile.status !== "active" ? await priceSummary() : null;
-  const [{ scanCount }] = profile
-    ? await db().select({ scanCount: count() }).from(scans).where(eq(scans.profileId, profile.id))
-    : [{ scanCount: 0 }];
+  // QR scans of the owner's printed cards (logged by /c/{code}, no personal data).
+  const weekAgo = daysAgo(7);
+  const [{ scanCount, lastScan }] = profile
+    ? await db().select({ scanCount: count(), lastScan: max(scans.scannedAt) }).from(scans).where(eq(scans.profileId, profile.id))
+    : [{ scanCount: 0, lastScan: null }];
+  const [{ weekCount }] =
+    profile && scanCount
+      ? await db()
+          .select({ weekCount: count() })
+          .from(scans)
+          .where(and(eq(scans.profileId, profile.id), gte(scans.scannedAt, weekAgo)))
+      : [{ weekCount: 0 }];
   const published = Boolean(profile && (profile.publishedAt || profile.status === "active" || profile.status === "lapsed"));
   const renewsOn = sub?.currentPeriodEnd?.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
@@ -152,6 +163,21 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             <span className="text-sm text-muted">Create your website first</span>
           )}
         </Row>
+        {published && profile?.status !== "removed" && (
+          <Row
+            title="QR code scans"
+            body={
+              scanCount === 0
+                ? "No scans yet. Scan one of your printed cards with your phone to test it."
+                : `Your card has been scanned ${scanCount.toLocaleString("en-US")} ${scanCount === 1 ? "time" : "times"}` +
+                  `, ${weekCount} in the last 7 days. Last scan ${lastScan ? new Date(lastScan).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""}.`
+            }
+          >
+            <span className="text-4xl font-semibold tabular-nums tracking-tight" aria-hidden="true">
+              {scanCount.toLocaleString("en-US")}
+            </span>
+          </Row>
+        )}
         {sub && (
           <Row
             title="Billing"

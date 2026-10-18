@@ -25,7 +25,19 @@ ${footer ? `<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#7773
 
 const firstName = (name: string) => name.trim().split(/\s+/)[0] || "there";
 
-export function siteLiveEmail({ name, siteUrl, cardUrl, again }: { name: string; siteUrl: string; cardUrl: string; again: boolean }): Message {
+export function siteLiveEmail({
+  name,
+  siteUrl,
+  cardUrl,
+  printGuideUrl,
+  again,
+}: {
+  name: string;
+  siteUrl: string;
+  cardUrl: string;
+  printGuideUrl: string;
+  again: boolean;
+}): Message {
   const subject = again ? "Your site is back online" : "Your site is live";
   const lead = again ? "Thanks for renewing. Your site is back online at:" : "Your site is live at:";
   return {
@@ -37,7 +49,7 @@ export function siteLiveEmail({ name, siteUrl, cardUrl, again }: { name: string;
         again
           ? "Cards you've already printed work again; their QR code never changed."
           : "Your business card files are ready. Download them, then print at FedEx Office (choose &ldquo;Quick Business Cards&rdquo;), a UPS Store, or at home.",
-        "Before printing a whole batch, print one card and scan its QR code with your phone.",
+        `Before printing a whole batch, print one card and scan its QR code with your phone. <a href="${esc(printGuideUrl)}" style="color:#111111">Printing guide</a>`,
       ],
       button: { label: "Get my card files", href: cardUrl },
       footer: "You can edit your site any time. Changes show up right away, and printed cards keep working.",
@@ -51,6 +63,7 @@ export function siteLiveEmail({ name, siteUrl, cardUrl, again }: { name: string;
         ? "Cards you've already printed work again; their QR code never changed."
         : `Your business card files are ready: ${cardUrl}`,
       "Print one card and scan its QR code with your phone before printing a whole batch.",
+      `Printing guide: ${printGuideUrl}`,
     ].join("\n"),
   };
 }

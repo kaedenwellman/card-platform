@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   }
 
   // 2. Claude drafts the profile and slides; retried once, then we fall back to raw text.
-  const { draft, error } = await aiDraft(text);
+  const { draft, error, usage } = await aiDraft(text);
 
   // 3. Optional photo: goes on the first slide, shown whole ("contain").
   let photoError: string | undefined;
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
       resumeBlobUrl: resumePathname,
       theme,
     });
-    await recordParse(user.id, Boolean(draft), error);
+    await recordParse(user.id, Boolean(draft), error, usage);
     return Response.json({ ok: true, drafted: Boolean(draft), slug: saved.slug, error, photoError });
   } catch (err) {
     if (err instanceof ProfileLockedError) {

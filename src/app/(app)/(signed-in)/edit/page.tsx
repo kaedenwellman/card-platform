@@ -11,6 +11,7 @@ import { EntryForm } from "./EntryForm";
 import { EntryItem } from "./EntryItem";
 import { FactsEditor } from "./FactsEditor";
 import { MoveButtons } from "./MoveButtons";
+import { SearchToggle } from "./SearchToggle";
 import { SlugEditor } from "./SlugEditor";
 import { StartOverButton } from "./StartOverButton";
 
@@ -72,6 +73,11 @@ export default async function EditPage({ searchParams }: PageProps<"/edit">) {
       <section className="flex flex-col gap-4 border-t border-line pt-8">
         <h2 className={label}>Web address</h2>
         <SlugEditor initial={profile.slug} host={new URL(siteOrigin()).host} isLive={!isDraft} />
+      </section>
+
+      <section className="flex flex-col gap-4 border-t border-line pt-8">
+        <h2 className={label}>Search engines</h2>
+        <SearchToggle initial={profile.noindex} />
       </section>
 
       <section className="flex flex-col gap-4 border-t border-line pt-8">

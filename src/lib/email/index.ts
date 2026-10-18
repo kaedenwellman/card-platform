@@ -69,7 +69,7 @@ export async function notifySiteLive(profileId: string, subscriptionId: string, 
     kind: "site_live",
     dedupeKey: `site_live:${subscriptionId}`,
     profileId,
-    message: siteLiveEmail({ name: r.name, siteUrl: `${origin}/${r.slug}`, cardUrl: `${origin}/card`, again }),
+    message: siteLiveEmail({ name: r.name, siteUrl: `${origin}/${r.slug}`, cardUrl: `${origin}/card`, printGuideUrl: `${origin}/print-guide`, again }),
   });
 }
 

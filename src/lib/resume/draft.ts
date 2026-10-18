@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { del, get } from "@vercel/blob";
 import { PhotoError, processPhoto } from "../images";
 import { normalizeDraft, type Draft } from "./normalize";
-import { draftFromResumeText } from "./parse-ai";
+import { draftFromResumeText, type AiUsage } from "./parse-ai";
 
 // Shared by the resume upload (/api/resume/parse) and the resume interview (/api/resume/interview).
 
@@ -14,23 +14,33 @@ export async function readPrivateBlob(pathname: string) {
 }
 
 // Claude drafts the profile and slides; one retry, then null (the caller falls back to raw text).
-export async function aiDraft(text: string, source: "resume" | "interview" = "resume"): Promise<{ draft: Draft | null; error?: string }> {
+// usage adds up every attempt, including failed ones, since those are billed too.
+export async function aiDraft(
+  text: string,
+  source: "resume" | "interview" = "resume",
+): Promise<{ draft: Draft | null; error?: string; usage: AiUsage | null }> {
   let lastError = "The AI draft didn't come back in the expected shape.";
+  let usage = null as AiUsage | null;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const ai = await draftFromResumeText(text, source);
-      if (ai) return { draft: normalizeDraft(ai) };
+      usage = {
+        inputTokens: (usage?.inputTokens ?? 0) + ai.usage.inputTokens,
+        outputTokens: (usage?.outputTokens ?? 0) + ai.usage.outputTokens,
+        model: ai.usage.model,
+      };
+      if (ai.draft) return { draft: normalizeDraft(ai.draft), usage };
     } catch (err) {
       // Don't burn the retry on problems a retry can't fix.
       if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
         console.error("Anthropic auth error", err.message);
-        return { draft: null, error: "The AI service isn't configured correctly." };
+        return { draft: null, error: "The AI service isn't configured correctly.", usage };
       }
       if (err instanceof Anthropic.APIError) lastError = `AI service error (${err.status ?? "network"}).`;
       console.error(`Draft attempt ${attempt} failed`, err);
     }
   }
-  return { draft: null, error: lastError };
+  return { draft: null, error: lastError, usage };
 }
 
 // Re-encodes an uploaded photo and returns its /media URL; always deletes the original upload.

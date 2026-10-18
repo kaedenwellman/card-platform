@@ -370,3 +370,15 @@ export async function startOver(): Promise<{ ok: false; error: string } | void> 
   revalidatePath("/dashboard");
   redirect("/create");
 }
+
+// ---------- Search engines ----------
+
+// Asks search engines not to list the site (a robots "noindex" tag). The site stays public: anyone
+// with the link or QR code can still open it.
+export async function setHiddenFromSearch(hidden: boolean): Promise<{ ok: true }> {
+  const value = z.boolean().parse(hidden);
+  const profile = await ownedProfileOrThrow();
+  await db().update(profiles).set({ noindex: value, updatedAt: new Date() }).where(eq(profiles.id, profile.id));
+  refresh(profile.slug);
+  return { ok: true };
+}

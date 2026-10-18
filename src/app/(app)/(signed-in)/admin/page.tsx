@@ -1,10 +1,13 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { count, desc, eq, gte, inArray, isNotNull, sum } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db, hasDatabase } from "@/db";
-import { profiles, reports, subscriptions } from "@/db/schema";
+import { profiles, reports, resumeParses, subscriptions } from "@/db/schema";
 import { currentAdmin } from "@/lib/admin";
+import { costUsd } from "@/lib/ai-cost";
 import { isValidSlug } from "@/lib/slugs";
 import { AdminButton } from "./AdminButton";
+
+const daysAgo = (days: number) => new Date(Date.now() - days * 86_400_000);
 
 export const metadata = { title: "Admin", robots: { index: false, follow: false } };
 
@@ -53,6 +56,33 @@ function Actions({ p }: { p: Profile }) {
   );
 }
 
+const usd = (n: number) => `$${n < 1 ? n.toFixed(3) : n.toFixed(2)}`;
+
+// AI drafting cost from resume_parses, priced per model (the refusal fallback can switch models).
+async function aiUsage(since: Date | null) {
+  const rows = await db()
+    .select({
+      model: resumeParses.model,
+      runs: count(),
+      input: sum(resumeParses.inputTokens).mapWith(Number),
+      output: sum(resumeParses.outputTokens).mapWith(Number),
+    })
+    .from(resumeParses)
+    .where(since ? gte(resumeParses.createdAt, since) : isNotNull(resumeParses.model))
+    .groupBy(resumeParses.model);
+  const priced = rows.filter((r) => r.model);
+  const runs = priced.reduce((n, r) => n + r.runs, 0);
+  let cost = 0;
+  let unpriced = 0;
+  for (const r of priced) {
+    const c = costUsd(r.model, r.input ?? 0, r.output ?? 0);
+    if (c === null) unpriced += r.runs;
+    else cost += c;
+  }
+  const tokens = priced.reduce((n, r) => n + (r.input ?? 0) + (r.output ?? 0), 0);
+  return { runs, tokens, cost, perRun: runs ? cost / runs : 0, unpriced };
+}
+
 // Reports inbox and takedowns. Only visible to ADMIN_EMAILS; everyone else gets a 404.
 export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   if (!hasDatabase() || !(await currentAdmin())) notFound();
@@ -74,6 +104,8 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   }
   const removed = await db().select().from(profiles).where(eq(profiles.status, "removed")).orderBy(desc(profiles.removedAt)).limit(50);
   const [found] = lookup && isValidSlug(lookup) ? await db().select().from(profiles).where(eq(profiles.slug, lookup)).limit(1) : [];
+
+  const [month, allTime] = await Promise.all([aiUsage(daysAgo(30)), aiUsage(null)]);
 
   const ids = [...byProfile.keys(), ...removed.map((p) => p.id), ...(found ? [found.id] : [])];
   const subs = ids.length ? await db().select().from(subscriptions).where(inArray(subscriptions.profileId, ids)) : [];
@@ -136,6 +168,39 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <h2 className={label}>AI cost</h2>
+        <table className="w-full max-w-xl border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-line text-left text-muted">
+              <th className="py-2 font-normal" />
+              <th className="py-2 font-normal">Generations</th>
+              <th className="py-2 font-normal">Tokens</th>
+              <th className="py-2 font-normal">Cost</th>
+              <th className="py-2 font-normal">Per generation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { name: "Last 30 days", u: month },
+              { name: "All time", u: allTime },
+            ].map(({ name, u }) => (
+              <tr key={name} className="border-b border-line">
+                <td className="py-2 text-muted">{name}</td>
+                <td className="py-2">{u.runs}</td>
+                <td className="py-2">{u.tokens.toLocaleString("en-US")}</td>
+                <td className="py-2">{usd(u.cost)}</td>
+                <td className="py-2">{u.runs ? usd(u.perRun) : "–"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="text-xs text-muted">
+          Claude API list prices, counting retries and failed attempts. Generations from before tracking started aren&apos;t
+          included.{allTime.unpriced ? ` ${allTime.unpriced} used a model without a price in src/lib/ai-cost.ts.` : ""}
+        </p>
       </div>
 
       <div className="flex flex-col gap-4">

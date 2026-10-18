@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { hasDatabase } from "@/db";
 import { cardData, qrUrl } from "@/lib/card";
@@ -46,6 +47,9 @@ export default async function CardPage() {
             <li>Print at 100% (never &quot;fit to page&quot;).</li>
             <li>Scan the QR on one card with your phone before cutting or taking the whole batch.</li>
           </ol>
+          <Link href="/print-guide" className="mt-4 inline-block text-sm text-gold underline underline-offset-4">
+            Full printing guide →
+          </Link>
         </div>
       </div>
     </section>

@@ -113,6 +113,10 @@ export const resumeParses = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     ok: boolean("ok").notNull().default(false),
     error: text("error"),
+    // Claude API usage for this generation (all attempts), for cost tracking. Null if no AI call ran.
+    inputTokens: integer("input_tokens"),
+    outputTokens: integer("output_tokens"),
+    model: text("model"),
   },
   (t) => [index("resume_parses_user_idx").on(t.userId, t.createdAt)],
 );

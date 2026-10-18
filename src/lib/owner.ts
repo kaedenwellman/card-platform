@@ -47,8 +47,22 @@ export async function parsesInLastDay(userId: string) {
   return n;
 }
 
-export async function recordParse(userId: string, ok: boolean, error?: string) {
-  await db().insert(resumeParses).values({ userId, ok, error: error?.slice(0, 500) });
+export async function recordParse(
+  userId: string,
+  ok: boolean,
+  error?: string,
+  usage?: { inputTokens: number; outputTokens: number; model: string } | null,
+) {
+  await db()
+    .insert(resumeParses)
+    .values({
+      userId,
+      ok,
+      error: error?.slice(0, 500),
+      inputTokens: usage?.inputTokens ?? null,
+      outputTokens: usage?.outputTokens ?? null,
+      model: usage?.model ?? null,
+    });
 }
 
 // "Kaeden Wellman" -> "kaeden-wellman", then -2, -3... until unused. The slug picker comes in M3.

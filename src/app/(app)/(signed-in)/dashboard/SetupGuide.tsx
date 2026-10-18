@@ -27,7 +27,7 @@ export function SetupGuide({ hasSite, published, scanned }: { hasSite: boolean; 
     },
     {
       title: "Print and test your card",
-      body: "Download your card, print one, and scan its QR code with your phone camera. This step checks itself off when that first scan comes through.",
+      body: "Download your card, print one, and scan its QR code with your phone camera. The printing guide covers FedEx, UPS, and home printers. This step checks itself off when that first scan comes through.",
       done: scanned,
       action: { label: "Print my business card", href: "/card" },
     },

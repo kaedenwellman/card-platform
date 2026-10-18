@@ -272,6 +272,12 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 ### Setup guide (dashboard)
 - `src/app/(app)/(signed-in)/dashboard/SetupGuide.tsx`: a 4-step "Getting set up" tutorial at the top of the dashboard: make your site → check every line → publish → print and test your card. Steps check themselves off from real state (a site exists; published; at least one QR scan logged), the current step gets a blue edge and one button, and the guide disappears when all four are done (hidden for taken-down sites).
 
+### Dashboard, editor, admin extras (Oct 2026)
+- QR scans on the dashboard: total, last 7 days, last scan date (from `scans`), shown once published.
+- "Hide from Google" checkbox on `/edit` (`setHiddenFromSearch` → `profiles.noindex` → `noindex, nofollow` robots meta on `/[slug]`). The site stays public.
+- AI cost tracking: `resume_parses` stores `input_tokens`, `output_tokens`, `model` for every generation, summed over retries and failed attempts (`draftFromResumeText` uses `messages.create` and validates with Zod itself so a bad reply still reports usage). `/admin` shows generations, tokens, cost, and cost per generation for the last 30 days and all time, priced from `src/lib/ai-cost.ts` (update when prices change). Verified with a fake Claude API: one clean run $0.048; a failed attempt plus retry recorded as both ($0.096).
+- `/print-guide` (public): which file to use, FedEx/UPS steps, home printing (100%, flip on long edge, cut marks), test scan, troubleshooting. Linked from `/card`, the setup guide, and the "you're live" email.
+
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
 - [ ] Set `ADMIN_EMAILS` in Vercel (your email) so reports reach you and `/admin` works

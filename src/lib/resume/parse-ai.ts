@@ -66,11 +66,20 @@ let client: Anthropic | undefined;
 // interview, which are often spoken and transcribed.
 const INTERVIEW_NOTE = `These are not a resume. They are the person's own answers to interview questions, often spoken and transcribed, so expect filler words, run-on sentences, and missing punctuation. Treat the answers as the resume: turn them into concise, professional resume wording (clean bullets, consistent tense, no filler), but every fact must come from what they said. Never add numbers, titles, dates, employers, or skills they didn't mention. Skip questions they left blank.`;
 
-// Returns the parsed draft, or null if Claude declined or the output didn't match the schema.
-export async function draftFromResumeText(resumeText: string, source: "resume" | "interview" = "resume"): Promise<AiDraft | null> {
+// Tokens billed for one call (input includes any cached tokens), and the model that served it,
+// which can differ from MODEL when the refusal fallback kicks in.
+export type AiUsage = { inputTokens: number; outputTokens: number; model: string };
+
+// Returns the parsed draft (null if Claude declined or the output didn't match the schema) and the
+// tokens the call used, so every generation's cost can be recorded.
+export async function draftFromResumeText(
+  resumeText: string,
+  source: "resume" | "interview" = "resume",
+): Promise<{ draft: AiDraft | null; usage: AiUsage }> {
   client ??= new Anthropic({ timeout: 120_000, maxRetries: 2 });
 
-  const response = await client.beta.messages.parse({
+  // create (not parse) so a malformed reply still gives us its usage; we validate it ourselves.
+  const response = await client.beta.messages.create({
     model: MODEL,
     max_tokens: 16000,
     output_config: { effort: "medium", format: betaZodOutputFormat(DraftSchema) },
@@ -89,6 +98,18 @@ export async function draftFromResumeText(resumeText: string, source: "resume" |
     ],
   });
 
-  if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") return null;
-  return response.parsed_output ?? null;
+  const u = response.usage;
+  const usage = {
+    inputTokens: u.input_tokens + (u.cache_creation_input_tokens ?? 0) + (u.cache_read_input_tokens ?? 0),
+    outputTokens: u.output_tokens,
+    model: response.model,
+  };
+  if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") return { draft: null, usage };
+  const text = response.content.flatMap((c) => (c.type === "text" ? [c.text] : [])).join("");
+  try {
+    const parsed = DraftSchema.safeParse(JSON.parse(text));
+    return { draft: parsed.success ? parsed.data : null, usage };
+  } catch {
+    return { draft: null, usage }; // not JSON; the caller retries once
+  }
 }

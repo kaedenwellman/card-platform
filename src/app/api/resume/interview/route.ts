@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     return fail(429, `You can build up to ${DAILY_PARSE_LIMIT} drafts a day. Try again tomorrow.`);
   }
 
-  const { draft, error } = await aiDraft(text, "interview");
+  const { draft, error, usage } = await aiDraft(text, "interview");
 
   let photoError: string | undefined;
   if (photoPathname) {
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       resumeBlobUrl: null,
       theme,
     });
-    await recordParse(user.id, Boolean(draft), error);
+    await recordParse(user.id, Boolean(draft), error, usage);
     return Response.json({ ok: true, drafted: Boolean(draft), slug: saved.slug, error, photoError });
   } catch (err) {
     if (err instanceof ProfileLockedError) return fail(409, "Your site is already published.");
