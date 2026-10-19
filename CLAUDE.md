@@ -278,6 +278,8 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 - AI cost tracking: `resume_parses` stores `input_tokens`, `output_tokens`, `model` for every generation, summed over retries and failed attempts (`draftFromResumeText` uses `messages.create` and validates with Zod itself so a bad reply still reports usage). `/admin` shows generations, tokens, cost, and cost per generation for the last 30 days and all time, priced from `src/lib/ai-cost.ts` (update when prices change). Verified with a fake Claude API: one clean run $0.048; a failed attempt plus retry recorded as both ($0.096).
 - `/print-guide` (public): which file to use, FedEx/UPS steps, home printing (100%, flip on long edge, cut marks), test scan, troubleshooting. Linked from `/card`, the setup guide, and the "you're live" email.
 
+- End-to-end phone test passed (Oct 2026, Kaeden, test mode): sign up → create → publish → print → scan.
+
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
 - [x] Set `ADMIN_EMAILS` in Vercel (done Oct 2026)
