@@ -280,7 +280,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 
 ### Launch checklist (Kaeden asked to be reminded; most depend on the brand name/LLC)
 - [ ] Form the LLC; pick the brand name and buy the domain
-- [ ] Set `ADMIN_EMAILS` in Vercel (your email) so reports reach you and `/admin` works
+- [x] Set `ADMIN_EMAILS` in Vercel (done Oct 2026)
 - [ ] Fill in `src/lib/legal.ts` (business name, contact email, state, refund policy), set `DRAFT: false`; lawyer review of /terms and /privacy
 - [ ] Clerk → Legal/Compliance: require consent to /terms and /privacy at sign-up
 - [ ] Stripe → Settings → Billing: turn on "Send emails about upcoming renewals" (the terms promise it) and successful-payment receipts
