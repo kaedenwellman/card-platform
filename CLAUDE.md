@@ -283,7 +283,7 @@ ADMIN_EMAILS                  # comma-separated, for takedowns and reports
 - [x] Set `ADMIN_EMAILS` in Vercel (done Oct 2026)
 - [ ] Fill in `src/lib/legal.ts` (business name, contact email, state, refund policy), set `DRAFT: false`; lawyer review of /terms and /privacy
 - [ ] Clerk → Legal/Compliance: require consent to /terms and /privacy at sign-up
-- [ ] Stripe → Settings → Billing: turn on "Send emails about upcoming renewals" (the terms promise it) and successful-payment receipts
+- [x] Stripe renewal reminder emails and receipts turned on (Oct 2026; re-check after switching Stripe to live mode, settings are per mode)
 - [ ] `NEXT_PUBLIC_SITE_URL` = the permanent domain (QR codes and emails use it) before anyone prints a card
 - [ ] Resend: verify the domain, set `EMAIL_FROM` to it
 - [ ] Switch Stripe and Clerk to live mode; real prices; replace `BRAND` in the app header/metadata
